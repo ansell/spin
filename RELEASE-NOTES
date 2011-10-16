@@ -1,0 +1,102 @@
+TopBraid SPIN API 1.2.0 (2011-05-31)
+
+- Feature: Follows latest SPIN spec, with SPARQL 1.1 support
+- Feature: Support for the new spin:eval function
+- Bug fix: AbstractTriplesVisitor ran into infinite loop with recursive function calls
+- Bug fix: Inference engine now reacts on progressMonitor canceled
+- Bug fix: Various fixes related to non-sp:arg arguments in function calls
+- Change:  Renamed Let to Bind (also in sp namespace - sp:Let will still work though)
+- Change:  Performance improvements in SPIN RDF->SPARQL conversion through cache
+           Note that this cache assumes that SPIN RDF structures are stable, so that
+           the same SPIN RDF node will always produce the same SPARQL query/expression.
+           The cache can be switched off (ARQFactory.setUseCaches).
+
+
+TopBraid SPIN API 1.1.2 (2010-09-17)
+
+- Feature: Added further SPARQL 1.1 support to SPIN RDF Syntax
+           - COALESCE
+           - FILTER EXISTS
+           - FILTER NOT EXISTS
+           - IF
+           - IN
+           - IRI
+           - MINUS   
+           - NOT IN      
+- Feature: SPIN functions can now take argument with any predicate, not just sp:arg1 etc.
+           In textual notation, the alphabetic ordering of property local names is used.
+- Feature: Added magic property spl:relevantPropertyAtClass
+- Bug fix: SPIN RDF syntax did not handle project expressions such as (?x AS ?y)
+- Bug fix: Rewrote template instantiation code by printing query with pre-bound variables
+- Bug fix: Rendering of ORDER BY ?x did not work if ?x had an rdf:type
+
+
+
+TopBraid SPIN API 1.1.1 (2010-03-28)
+
+- Feature: Generalized aggregations support including AVG, MIN and MAX
+- Feature: SPIN syntax support for SELECT project expressions (expr AS ?var)
+- Feature: Magic properties now only compute values on demand (use a QueryIterator)
+- Feature: Constraint violations now also include spin:violationSource
+- Feature: API support for SPIN Result Sets (http://spinrdf.org/spr.html)
+- Bug fix: Rendering of rdf Lists (magic property calls) was sometimes wrong 
+- Bug fix: Subproperties of spin:constructor were not always recognized
+- Bug fix: Now supporting variables in SERVICE keyword
+
+
+TopBraid SPIN API 1.1.0 (2009-10-??)
+
+- Feature: Support for user-defined spin:MagicProperties
+- Feature: SPARQL UPDATE (INSERT INTO, DELETE FROM, MODIFY) now supported by
+           SPIN RDF syntax (see org.topbraid.model.update)
+- Feature: Control rule execution order with spin:nextRuleProperty and
+           spin:rulePropertyMaxIterationCount
+- Feature: Support for spin:fix on constraint violations
+- Feature: Support for spin:thisUnbound to control performance
+- Bug fix: Instances of subclasses of spin:Function were not recognized as functions
+- Bug fix: Indentation of solution modifiers of nested SELECT queries was incorrect
+- Change:  Moved to Jena 2.6.2 and ARQ 2.8.1
+- Change:  Moved JenaUtil class to util package
+- Change:  Removed support for spin:ruleIndex.  Instead, lexical order is used.
+- Change:  Introduced support for subclasses of spin:Template, so that templates
+           can also point to Update requests.  This required some API changes.
+
+
+TopBraid SPIN API 1.0.2 (2009-08-11)
+
+- Bug fix: User-defined SPARQL function calls crashed (with false) if an argument
+           was an unbound variable.
+- Bug fix: SPIN RDF Syntax now supports COUNT(DISTINCT...) aggregations
+- Bug fix: SPIN constructors did not create SPINExplanations
+- Change:  Now requires Jena 2.6 or above
+- Feature: Added support for ARQ's SERVICE keyword to SPIN RDF Syntax
+- Feature: Added support for ARQ's NOT EXISTS keyword to SPIN RDF Syntax
+- Feature: Support for the new property spin:imports.
+           This property can link a file with another file that contains
+           constraints, such as http://topbraid.org/spin/spinowl for OWL
+           constraint checking, without having to import all of SPIN etc. 
+
+
+TopBraid SPIN API 1.0.1 (2009-06-14)
+
+- Bug fix: rdf:type has been abbreviated with "a" at object and subject positions
+- Bug fix: Initialization of SPL functions did not handle spin variable names 
+- Feature: SPIN RDF syntax now supports SubQuery
+- Change: SPL/SP/SPIN.getModel() more tolerant against running API from source code
+
+
+TopBraid SPIN API 1.0.0 (2009-04-24)
+
+- First stable release
+
+
+
+TopBraid SPIN API 0.9.0 (2009-03-06)
+
+- First public release, with AGPL license
+
+
+System Requirements:
+
+- Java SE 1.5
+- Tested with Jena 2.5.7
