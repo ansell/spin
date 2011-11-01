@@ -19,6 +19,7 @@ import org.topbraid.spin.model.Template;
 import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.model.update.Update;
 import org.topbraid.spin.system.SPINLabels;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SPIN;
 
 import com.hp.hpl.jena.query.Query;
@@ -42,15 +43,15 @@ public class SPINQueryFinder {
 			Model model,
 			boolean withClass,
 			Map<CommandWrapper, Map<String, RDFNode>> initialTemplateBindings,
-			boolean allowAsk) {
+			boolean allowAsk, SPINModuleRegistry registry) {
 		if(s.getObject().isResource()) {
 			String spinQueryText = null;
 			String label = null;
 			org.topbraid.spin.model.Command spinCommand = null;
 			Template template = null;
-			TemplateCall templateCall = SPINFactory.asTemplateCall(s.getResource());
+			TemplateCall templateCall = SPINFactory.asTemplateCall(s.getResource(), registry);
 			if(templateCall != null) {
-				template = templateCall.getTemplate();
+				template = templateCall.getTemplate(registry);
 				if(template != null) {
 					Command body = template.getBody();
 					if(body instanceof Construct || (allowAsk && body instanceof Ask)) {
@@ -71,14 +72,14 @@ public class SPINQueryFinder {
 			}
 			
 			if(spinCommand != null) {
-				String queryString = ARQFactory.get().createCommandString(spinCommand);
+				String queryString = ARQFactory.get().createCommandString(spinCommand, registry);
 				boolean thisUnbound = spinCommand.hasProperty(SPIN.thisUnbound, JenaDatatypes.TRUE);
 				if(spinQueryText == null) {
 					spinQueryText = queryString;
 				}
 				if(!thisUnbound && withClass &&
 						(spinCommand instanceof Construct || spinCommand instanceof Update) 
-						&& SPINUtil.containsThis((CommandWithWhere)spinCommand)) {
+						&& SPINUtil.containsThis((CommandWithWhere)spinCommand, registry)) {
 					queryString = SPINUtil.addThisTypeClause(queryString);
 				}
 				CommandWrapper wrapper = null;
@@ -105,7 +106,7 @@ public class SPINQueryFinder {
 				}
 				
 				if(template != null && wrapper != null) {
-					Map<String,RDFNode> bindings = templateCall.getArgumentsMapByVarNames();
+					Map<String,RDFNode> bindings = templateCall.getArgumentsMapByVarNames(registry);
 					if(!bindings.isEmpty()) {
 						initialTemplateBindings.put(wrapper, bindings);
 					}
@@ -125,14 +126,15 @@ public class SPINQueryFinder {
 	 * @param initialTemplateBindings  will contain the initial bindings if
 	 *                                 QueryWrappers wrap SPIN template calls
 	 * @param allowAsk  also return ASK queries
+	 * @param registry TODO
 	 * @return the result Map, possibly empty but not null
 	 */
-	public static Map<Resource, List<CommandWrapper>> getClass2QueryMap(Model model, Model queryModel, Property predicate, boolean withClass, Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings, boolean allowAsk) {
+	public static Map<Resource, List<CommandWrapper>> getClass2QueryMap(Model model, Model queryModel, Property predicate, boolean withClass, Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings, boolean allowAsk, SPINModuleRegistry registry) {
 		predicate = model.getProperty(predicate.getURI());
 		Map<Resource,List<CommandWrapper>> class2Query = new HashMap<Resource,List<CommandWrapper>>();
 		List<Statement> ss = JenaUtil.getStatementsList(JenaUtil.listAllProperties(null, predicate));
 		for(Statement s : ss) {
-			add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk);
+			add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk, registry);
 		}
 		return class2Query;
 	}

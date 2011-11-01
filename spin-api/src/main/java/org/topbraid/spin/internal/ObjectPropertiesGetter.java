@@ -13,6 +13,7 @@ import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.TriplePattern;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.visitor.AbstractTriplesVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SPIN;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -35,8 +36,8 @@ public class ObjectPropertiesGetter extends AbstractTriplesVisitor {
 	private Model targetModel;
 	
 	
-	public ObjectPropertiesGetter(Model targetModel, Element element, Map<Property,RDFNode> initialBindings) {
-		super(element, initialBindings);
+	public ObjectPropertiesGetter(Model targetModel, Element element, Map<Property,RDFNode> initialBindings, SPINModuleRegistry registry) {
+		super(element, initialBindings, registry);
 		this.targetModel = targetModel;
 	}
 	

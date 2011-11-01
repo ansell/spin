@@ -13,6 +13,7 @@ import org.topbraid.spin.model.Argument;
 import org.topbraid.spin.model.QueryOrTemplateCall;
 import org.topbraid.spin.model.SPINInstance;
 import org.topbraid.spin.model.Template;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 import org.topbraid.spin.vocabulary.SPIN;
 import org.topbraid.spin.vocabulary.SPL;
@@ -70,13 +71,14 @@ public class SPLUtil {
 	 * subject via spin:constraint, that has a given predicate as its spl:predicate.
 	 * @param subject  the instance to get an Argument of
 	 * @param predicate  the predicate to match
+	 * @param registry TODO
 	 * @return the Argument or null if none found for that type
 	 */
-	public static Argument getArgument(Resource subject, Property predicate) {
+	public static Argument getArgument(Resource subject, Property predicate, SPINModuleRegistry registry) {
 		SPINInstance instance = subject.as(SPINInstance.class);
-		for(QueryOrTemplateCall qot : instance.getQueriesAndTemplateCalls(SPIN.constraint)) {
+		for(QueryOrTemplateCall qot : instance.getQueriesAndTemplateCalls(SPIN.constraint, registry)) {
 			if(qot.getTemplateCall() != null) {
-				Template template = qot.getTemplateCall().getTemplate();
+				Template template = qot.getTemplateCall().getTemplate(registry);
 				if(SPL.Argument.equals(template)) {
 					Argument a = (Argument) qot.getTemplateCall().as(Argument.class);
 					if(predicate.equals(a.getPredicate())) {

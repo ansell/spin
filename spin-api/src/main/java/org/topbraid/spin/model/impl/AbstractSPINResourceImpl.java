@@ -21,6 +21,7 @@ import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.print.Printable;
 import org.topbraid.spin.model.print.StringPrintContext;
 import org.topbraid.spin.system.ExtraPrefixes;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.SPINExpressions;
 import org.topbraid.spin.util.SPINUtil;
 import org.topbraid.spin.vocabulary.SP;
@@ -117,19 +118,19 @@ public abstract class AbstractSPINResourceImpl extends org.topbraid.spin.model.S
 	}
 
 
-	protected void printNestedElementList(PrintContext p) {
-		printNestedElementList(p, SP.elements);
+	protected void printNestedElementList(PrintContext p, SPINModuleRegistry registry) {
+		printNestedElementList(p, SP.elements, registry);
 	}
 	
 
-	protected void printNestedElementList(PrintContext p, Property predicate) {
+	protected void printNestedElementList(PrintContext p, Property predicate, SPINModuleRegistry registry) {
 		p.print(" {");
 		p.println();
 		Resource elementsRaw = getResource(predicate);
 		if(elementsRaw != null) {
 			ElementList elements = elementsRaw.as(ElementList.class);
 			p.setIndentation(p.getIndentation() + 1);
-			elements.print(p);
+			elements.print(p, registry);
 			p.setIndentation(p.getIndentation() - 1);
 		}
 		p.printIndentation(p.getIndentation());
@@ -137,19 +138,19 @@ public abstract class AbstractSPINResourceImpl extends org.topbraid.spin.model.S
 	}
 
 	
-	protected void printNestedExpressionString(PrintContext context, RDFNode node) {
-		printNestedExpressionString(context, node, false);
+	protected void printNestedExpressionString(PrintContext context, RDFNode node, SPINModuleRegistry registry) {
+		printNestedExpressionString(context, node, false, registry);
 	}
 	
 	
-	protected void printNestedExpressionString(PrintContext p, RDFNode node, boolean force) {
-		SPINExpressions.printExpressionString(p, node, true, force, getModel().getGraph().getPrefixMapping());
+	protected void printNestedExpressionString(PrintContext p, RDFNode node, boolean force, SPINModuleRegistry registry) {
+		SPINExpressions.printExpressionString(p, node, true, force, getModel().getGraph().getPrefixMapping(), registry);
 	}
 	
 	
-	protected void printPrefixes(PrintContext context) {
+	protected void printPrefixes(PrintContext context, SPINModuleRegistry registry) {
 		if(context.getPrintPrefixes()) {
-			Set<Resource> uriResources = SPINUtil.getURIResources(this);
+			Set<Resource> uriResources = SPINUtil.getURIResources(this, registry);
 			Set<String> namespaces = new HashSet<String>();
 			for(Resource uriResource : uriResources) {
 				String namespace = uriResource.getNameSpace();
@@ -177,18 +178,27 @@ public abstract class AbstractSPINResourceImpl extends org.topbraid.spin.model.S
 		}
 	}
 
-	
+	/**
+	 * Prints the resource using the global registry as a reference for functions and modules
+	 */
+	@Override
 	public String toString() {
+	    return toString(SPINModuleRegistry.get());
+	}
+	
+	@Override
+    public String toString(SPINModuleRegistry registry) {
+	    
 		StringPrintContext p = new StringPrintContext();
-		print(p);
+		print(p, registry);
 		return p.getString();
 	}
 
 
-	public static void printVarOrResource(PrintContext p, Resource resource) {
+	public static void printVarOrResource(PrintContext p, Resource resource, SPINModuleRegistry registry) {
 		Variable variable = SPINFactory.asVariable(resource);
 		if(variable != null) {
-			variable.print(p);
+			variable.print(p, registry);
 		}
 		else if(resource.isURIResource()) {
 			p.printURIResource(resource);

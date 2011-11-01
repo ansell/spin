@@ -63,12 +63,16 @@ public class SPINUtil {
 	 * @param results  the List to add the results to
 	 */
 	public static void addQueryOrTemplateCalls(Resource cls, Property predicate, List<QueryOrTemplateCall> results) {
-		List<Statement> ss = JenaUtil.getStatementsList(JenaUtil.listAllProperties(cls, predicate));
+	    addQueryOrTemplateCalls(cls, predicate, results, SPINModuleRegistry.get());
+	}
+	    
+    public static void addQueryOrTemplateCalls(Resource cls, Property predicate, List<QueryOrTemplateCall> results, SPINModuleRegistry registry) {
+	    List<Statement> ss = JenaUtil.getStatementsList(JenaUtil.listAllProperties(cls, predicate));
 		
 		// Special case: we might have an instance of a template call like spl:Attribute
 		//               Then try to find the Template in the registry
 		if(ss.isEmpty() && cls != null && cls.isURIResource()) {
-			Template template = SPINModuleRegistry.get().getTemplate(cls.getURI(), null);
+			Template template = registry.getTemplate(cls.getURI(), null);
 			if(template != null) {
 				ss = JenaUtil.getStatementsList(JenaUtil.listAllProperties(template, predicate));
 			}
@@ -76,7 +80,7 @@ public class SPINUtil {
 		
 		for(Statement s : ss) {
 			if(s.getObject().isResource()) {
-				TemplateCall templateCall = SPINFactory.asTemplateCall(s.getResource());
+				TemplateCall templateCall = SPINFactory.asTemplateCall(s.getResource(), registry);
 				if(templateCall != null) {
 					results.add(new QueryOrTemplateCall(cls, templateCall));
 				}
@@ -147,7 +151,11 @@ public class SPINUtil {
 	 * @return true  if query mentions ?this
 	 */
 	public static boolean containsThis(CommandWithWhere command) {
-		return new ContainsVarChecker().contains(command, SPIN._this);
+	    return containsThis(command, SPINModuleRegistry.get());
+	}
+	
+    public static boolean containsThis(CommandWithWhere command, SPINModuleRegistry registry) {
+	    return new ContainsVarChecker().contains(command, SPIN._this, registry);
 	}
 	
 	
@@ -162,7 +170,11 @@ public class SPINUtil {
 	 * @throws IllegalArgumentException  if the node is not a valid SPIN Query or a String
 	 */
 	public static String getQueryString(RDFNode node, boolean usePrefixes) {
-		if(node.isLiteral()) {
+	    return getQueryString(node, usePrefixes, SPINModuleRegistry.get());
+	}
+	
+    public static String getQueryString(RDFNode node, boolean usePrefixes, SPINModuleRegistry registry) {
+	    if(node.isLiteral()) {
 			return ((Literal)node).getLexicalForm();
 		}
 		else {
@@ -172,17 +184,17 @@ public class SPINUtil {
 				if(usePrefixes) {
 					StringPrintContext p = new StringPrintContext();
 					p.setUsePrefixes(usePrefixes);
-					spinCommand.print(p);
+					spinCommand.print(p, registry);
 					return p.getString();
 				}
 				else {
-					return ARQFactory.get().createCommandString(spinCommand);
+					return ARQFactory.get().createCommandString(spinCommand, registry);
 				}
 			}
 			else {
-				TemplateCall templateCall = SPINFactory.asTemplateCall(resource);
+				TemplateCall templateCall = SPINFactory.asTemplateCall(resource, registry);
 				if(templateCall != null) {
-					return templateCall.getQueryString();
+					return templateCall.getQueryString(registry);
 				}
 				else {
 					throw new IllegalArgumentException("Node must be either literal or a SPIN query or a SPIN template call");
@@ -202,7 +214,7 @@ public class SPINUtil {
 	 * @return a Set of query strings
 	 */
 	public static Collection<String> getQueryStrings(Resource subject, Property property) {
-		Map<Statement,String> map = getQueryStringMap(subject, property);
+		Map<Statement,String> map = getQueryStringMap(subject, property, SPINModuleRegistry.get());
 		return map.values();
 	}
 	
@@ -216,9 +228,10 @@ public class SPINUtil {
 	 * that has created it.
 	 * @param subject  the subject to get the values of
 	 * @param property  the property to query
+	 * @param registry TODO
 	 * @return a Map of Statements to query strings
 	 */
-	public static Map<Statement,String> getQueryStringMap(Resource subject, Property property) {
+	public static Map<Statement,String> getQueryStringMap(Resource subject, Property property, SPINModuleRegistry registry) {
 		if(subject != null) {
 			property = subject.getModel().getProperty(property.getURI());
 		}
@@ -230,7 +243,7 @@ public class SPINUtil {
 			while(it.hasNext()) {
 				Statement s = it.nextStatement();
 				RDFNode object = s.getObject();
-				String str = getQueryString(object, false);
+				String str = getQueryString(object, false, registry);
 				queryStrings.put(s, str);
 			}
 		}
@@ -238,7 +251,7 @@ public class SPINUtil {
 	}
 	
 	
-	public static Set<Resource> getURIResources(Printable query) {
+	public static Set<Resource> getURIResources(Printable query, SPINModuleRegistry registry) {
 		final Set<Resource> results = new HashSet<Resource>();
 		StringPrintContext context = new StringPrintContext() {
 
@@ -253,7 +266,7 @@ public class SPINUtil {
 				results.add(resource);
 			}
 		};
-		query.print(context);
+		query.print(context, registry);
 		return results;
 	}
 

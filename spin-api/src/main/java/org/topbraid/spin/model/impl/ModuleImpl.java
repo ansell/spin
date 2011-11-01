@@ -17,6 +17,7 @@ import org.topbraid.spin.model.Command;
 import org.topbraid.spin.model.Module;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.util.ModulesUtil;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -106,7 +107,7 @@ public class ModuleImpl extends AbstractSPINResourceImpl implements Module {
 	}
 
 
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		// TODO Auto-generated method stub
 
 	}

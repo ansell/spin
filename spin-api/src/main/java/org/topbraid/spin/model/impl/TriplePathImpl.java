@@ -7,6 +7,7 @@ package org.topbraid.spin.model.impl;
 import org.topbraid.spin.model.TriplePath;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.vocabulary.SP;
 
@@ -38,13 +39,13 @@ public class TriplePathImpl extends TupleImpl implements TriplePath {
 	}
 
 	
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 
 	
-	public void print(PrintContext p) {
-		print(getSubject(), p);
+	public void print(PrintContext p, SPINModuleRegistry registry) {
+		print(getSubject(), p, registry);
 		p.print(" ");
 		
 		Statement pathS = getProperty(SP.path);
@@ -57,7 +58,7 @@ public class TriplePathImpl extends TupleImpl implements TriplePath {
 		}
 		
 		p.print(" ");
-		print(getObject(), p);
+		print(getObject(), p, registry);
 	}
 	
 	

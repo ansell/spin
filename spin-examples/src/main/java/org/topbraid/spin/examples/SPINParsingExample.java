@@ -50,11 +50,11 @@ public class SPINParsingExample {
 		model.write(System.out, FileUtils.langTurtle);
 		
 		System.out.println("-----");
-		String str = spinQuery.toString();
+		String str = spinQuery.toString(SPINModuleRegistry.get());
 		System.out.println("SPIN query:\n" + str);
 		
 		// Now turn it back into a Jena Query
-		Query parsedBack = ARQFactory.get().createQuery(spinQuery);
+		Query parsedBack = ARQFactory.get().createQuery(spinQuery, SPINModuleRegistry.get());
 		System.out.println("Jena query:\n" + parsedBack);
 	}
 }

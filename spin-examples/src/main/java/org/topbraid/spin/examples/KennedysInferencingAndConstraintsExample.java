@@ -18,6 +18,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.ReificationStyle;
+import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 
 
 /**
@@ -45,14 +46,14 @@ public class KennedysInferencingAndConstraintsExample {
 		ontModel.addSubModel(newTriples);
 
 		// Register locally defined functions
-		SPINModuleRegistry.get().registerAll(ontModel, null);
+		SPINModuleRegistry.get().registerAll(ontModel, null, SPINModuleRegistry.get(), FunctionRegistry.get());
 
 		// Run all inferences
-		SPINInferences.run(ontModel, newTriples, null, null, false, null);
+		SPINInferences.run(ontModel, newTriples, null, null, false, null, SPINModuleRegistry.get());
 		System.out.println("Inferred triples: " + newTriples.size());
 
 		// Run all constraints
-		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null);
+		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null, SPINModuleRegistry.get(), FunctionRegistry.get());
 		System.out.println("Constraint violations:");
 		for(ConstraintViolation cv : cvs) {
 			System.out.println(" - at " + SPINLabels.get().getLabel(cv.getRoot()) + ": " + cv.getMessage());
@@ -60,7 +61,7 @@ public class KennedysInferencingAndConstraintsExample {
 
 		// Run constraints on a single instance only
 		Resource person = cvs.get(0).getRoot();
-		List<ConstraintViolation> localCVS = SPINConstraints.check(person, null);
+		List<ConstraintViolation> localCVS = SPINConstraints.check(person, null, SPINModuleRegistry.get(), FunctionRegistry.get());
 		System.out.println("Constraint violations for " + SPINLabels.get().getLabel(person) + ": " + localCVS.size());
 	}
 }

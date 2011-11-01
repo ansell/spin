@@ -2,6 +2,8 @@ package org.topbraid.spin.arq;
 
 import java.util.Iterator;
 
+import org.topbraid.spin.system.SPINModuleRegistry;
+
 import com.hp.hpl.jena.sparql.pfunction.PropertyFunctionFactory;
 import com.hp.hpl.jena.sparql.pfunction.PropertyFunctionRegistry;
 
@@ -22,10 +24,12 @@ import com.hp.hpl.jena.sparql.pfunction.PropertyFunctionRegistry;
 public class SPINThreadPropertyFunctionRegistry extends PropertyFunctionRegistry {
 	
 	private PropertyFunctionRegistry base;
+    private SPINModuleRegistry spinModuleRegistry;
 	
 	
-	public SPINThreadPropertyFunctionRegistry(PropertyFunctionRegistry base) {
+	public SPINThreadPropertyFunctionRegistry(PropertyFunctionRegistry base, SPINModuleRegistry nextRegistry) {
 		this.base = base;
+		this.spinModuleRegistry = nextRegistry;
 	}
 
 
@@ -37,7 +41,7 @@ public class SPINThreadPropertyFunctionRegistry extends PropertyFunctionRegistry
 		}
 		SPINThreadFunctions functions = SPINThreadFunctionRegistry.map.get(Thread.currentThread());
 		if(functions != null) {
-			PropertyFunctionFactory ff = functions.getPFunctionFactory(uri);
+			PropertyFunctionFactory ff = functions.getPFunctionFactory(uri, this.spinModuleRegistry);
 			if(ff != null) {
 				return ff;
 			}

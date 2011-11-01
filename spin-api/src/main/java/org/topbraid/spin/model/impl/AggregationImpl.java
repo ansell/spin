@@ -10,6 +10,7 @@ import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.print.Printable;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -48,7 +49,7 @@ public class AggregationImpl extends AbstractSPINResourceImpl implements Aggrega
 	}
 
 	
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		
 		Variable asVar = getAs(); 
 		if(asVar != null) {
@@ -69,7 +70,7 @@ public class AggregationImpl extends AbstractSPINResourceImpl implements Aggrega
 			Resource r = exprS.getResource();
 			RDFNode expr = SPINFactory.asExpression(r);
 			if(expr instanceof Printable) {
-				((Printable)expr).print(p);
+				((Printable)expr).print(p, registry);
 			}
 			else {
 				p.printURIResource(r);
@@ -82,7 +83,7 @@ public class AggregationImpl extends AbstractSPINResourceImpl implements Aggrega
 			p.print(") ");
 			p.printKeyword("AS");
 			p.print(" ");
-			p.print(asVar.toString());
+			p.print(asVar.toString(registry));
 		}
 		p.print(")");
 	}

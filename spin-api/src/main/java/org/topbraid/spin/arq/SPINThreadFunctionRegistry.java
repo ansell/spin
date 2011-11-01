@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.topbraid.spin.system.SPINModuleRegistry;
+
 import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
@@ -95,9 +97,11 @@ public class SPINThreadFunctionRegistry extends FunctionRegistry {
 	}
 	
 	private FunctionRegistry base;
+    private SPINModuleRegistry spinModuleRegistry;
 	
-	public SPINThreadFunctionRegistry(FunctionRegistry base) {
+	public SPINThreadFunctionRegistry(FunctionRegistry base, SPINModuleRegistry nextSpinModuleRegistry) {
 		this.base = base;
+		this.spinModuleRegistry = nextSpinModuleRegistry;
 	}
 
 
@@ -109,7 +113,7 @@ public class SPINThreadFunctionRegistry extends FunctionRegistry {
 		}
 		SPINThreadFunctions functions = map.get(Thread.currentThread());
 		if(functions != null) {
-			FunctionFactory ff = functions.getFunctionFactory(uri);
+			FunctionFactory ff = functions.getFunctionFactory(uri, this.spinModuleRegistry);
 			if(ff != null) {
 				return ff;
 			}

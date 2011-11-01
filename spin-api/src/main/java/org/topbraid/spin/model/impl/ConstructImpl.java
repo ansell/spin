@@ -10,6 +10,7 @@ import java.util.List;
 import org.topbraid.spin.model.Construct;
 import org.topbraid.spin.model.TripleTemplate;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -35,16 +36,16 @@ public class ConstructImpl extends QueryImpl implements Construct {
 	}
 
 
-	public void print(PrintContext context) {
+	public void print(PrintContext context, SPINModuleRegistry registry) {
 		printComment(context);
-		printPrefixes(context);
+		printPrefixes(context, registry);
 		context.printIndentation(context.getIndentation());
 		context.printKeyword("CONSTRUCT");
 		context.print(" {");
 		context.println();
 		for(TripleTemplate template : getTemplates()) {
 			context.printIndentation(context.getIndentation() + 1);
-			template.print(context);
+			template.print(context, registry);
 			context.print(" .");
 			context.println();
 		}
@@ -52,7 +53,7 @@ public class ConstructImpl extends QueryImpl implements Construct {
 		context.print("}");
 		printStringFrom(context);
 		context.println();
-		printWhere(context);
-		printSolutionModifiers(context);
+		printWhere(context, registry);
+		printSolutionModifiers(context, registry);
 	}
 }

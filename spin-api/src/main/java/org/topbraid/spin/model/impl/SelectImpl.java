@@ -14,6 +14,7 @@ import org.topbraid.spin.model.Select;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.print.Printable;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -52,9 +53,9 @@ public class SelectImpl extends QueryImpl implements Select {
 	}
 
 
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		printComment(p);
-		printPrefixes(p);
+		printPrefixes(p, registry);
 		p.printIndentation(p.getIndentation());
 		p.printKeyword("SELECT");
 		p.print(" ");
@@ -75,18 +76,18 @@ public class SelectImpl extends QueryImpl implements Select {
 				Resource var = vit.next();
 				if(var instanceof Variable) {
 					if(var.hasProperty(SP.expression)) {
-						printProjectExpression(p, (Variable) var);
+						printProjectExpression(p, (Variable) var, registry);
 					}
 					else {
-						((Variable)var).print(p);
+						((Variable)var).print(p, registry);
 					}
 				}
 				else if(var instanceof Aggregation) {
-					((Printable)var).print(p);
+					((Printable)var).print(p, registry);
 				}
 				else {
 					p.print("(");
-					((Printable)var).print(p);
+					((Printable)var).print(p, registry);
 					p.print(")");
 				}
 				if(vit.hasNext()) {
@@ -96,14 +97,14 @@ public class SelectImpl extends QueryImpl implements Select {
 		}
 		printStringFrom(p);
 		p.println();
-		printWhere(p);
-		printGroupBy(p);
-		printHaving(p);
-		printSolutionModifiers(p);
+		printWhere(p, registry);
+		printGroupBy(p, registry);
+		printHaving(p, registry);
+		printSolutionModifiers(p, registry);
 	}
 	
 	
-	private void printGroupBy(PrintContext p) {
+	private void printGroupBy(PrintContext p, SPINModuleRegistry registry) {
 		Statement groupByS = getProperty(SP.groupBy);
 		if(groupByS != null) {
 			RDFList list = groupByS.getObject().as(RDFList.class);
@@ -115,14 +116,14 @@ public class SelectImpl extends QueryImpl implements Select {
 				while(it.hasNext()) {
 					p.print(" ");
 					RDFNode node = it.next();
-					printNestedExpressionString(p, node);
+					printNestedExpressionString(p, node, registry);
 				}
 			}
 		}
 	}
 	
 	
-	private void printHaving(PrintContext p) {
+	private void printHaving(PrintContext p, SPINModuleRegistry registry) {
 		Statement havingS = getProperty(SP.having);
 		if(havingS != null) {
 			RDFList list = havingS.getObject().as(RDFList.class);
@@ -134,22 +135,22 @@ public class SelectImpl extends QueryImpl implements Select {
 				while(it.hasNext()) {
 					p.print(" ");
 					RDFNode node = it.next();
-					printNestedExpressionString(p, node);
+					printNestedExpressionString(p, node, registry);
 				}
 			}
 		}
 	}
 	
 	
-	private void printProjectExpression(PrintContext p, Variable var) {
+	private void printProjectExpression(PrintContext p, Variable var, SPINModuleRegistry registry) {
 		p.print("((");
 		RDFNode expr = var.getProperty(SP.expression).getObject();
 		Printable expression = (Printable) SPINFactory.asExpression(expr);
-		expression.print(p);
+		expression.print(p, registry);
 		p.print(") ");
 		p.printKeyword("AS");
 		p.print(" ");
-		p.print(var.toString());
+		p.print(var.toString(registry));
 		p.print(")");
 	}
 }

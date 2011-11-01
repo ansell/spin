@@ -13,6 +13,7 @@ import org.topbraid.spin.model.FunctionCall;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.SolutionModifierQuery;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -105,7 +106,7 @@ public abstract class QueryImpl extends AbstractSPINResourceImpl implements Solu
 	}
 	
 	
-	protected void printSolutionModifiers(PrintContext context) {
+	protected void printSolutionModifiers(PrintContext context, SPINModuleRegistry registry) {
 		List<RDFNode> orderBy = getList(SP.orderBy);
 		if(!orderBy.isEmpty()) {
 			context.println();
@@ -119,18 +120,18 @@ public abstract class QueryImpl extends AbstractSPINResourceImpl implements Solu
 						context.printKeyword("ASC");
 						context.print(" ");
 						RDFNode expression = resource.getProperty(SP.expression).getObject();
-						printOrderByExpression(context, expression);
+						printOrderByExpression(context, expression, registry);
 					}
 					else if(resource.hasProperty(RDF.type, SP.Desc)) {
 						context.print(" ");
 						context.printKeyword("DESC");
 						context.print(" ");
 						RDFNode expression = resource.getProperty(SP.expression).getObject();
-						printOrderByExpression(context, expression);
+						printOrderByExpression(context, expression, registry);
 					}
 					else {
 						context.print(" ");
-						printOrderByExpression(context, node);
+						printOrderByExpression(context, node, registry);
 					}
 				}
 			}
@@ -152,7 +153,7 @@ public abstract class QueryImpl extends AbstractSPINResourceImpl implements Solu
 	}
 
 
-	private void printOrderByExpression(PrintContext sb, RDFNode node) {
+	private void printOrderByExpression(PrintContext sb, RDFNode node, SPINModuleRegistry registry) {
 		
 		if(node instanceof Resource) {
 			Resource resource = (Resource) node;
@@ -161,19 +162,19 @@ public abstract class QueryImpl extends AbstractSPINResourceImpl implements Solu
 				sb.print("(");
 				PrintContext pc = sb.clone();
 				pc.setNested(true);
-				call.print(pc);
+				call.print(pc, registry);
 				sb.print(")");
 				return;
 			}
 		}
 		
-		printNestedExpressionString(sb, node, true);
+		printNestedExpressionString(sb, node, true, registry);
 	}
 
 
-	protected void printWhere(PrintContext p) {
+	protected void printWhere(PrintContext p, SPINModuleRegistry registry) {
 		p.printIndentation(p.getIndentation());
 		p.printKeyword("WHERE");
-		printNestedElementList(p, SP.where);
+		printNestedElementList(p, SP.where, registry);
 	}
 }

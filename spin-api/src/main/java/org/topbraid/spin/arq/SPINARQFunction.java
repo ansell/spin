@@ -10,6 +10,7 @@ import java.util.List;
 import org.topbraid.spin.model.Argument;
 import org.topbraid.spin.model.Function;
 import org.topbraid.spin.model.Query;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SPIN;
 
 import com.hp.hpl.jena.graph.Node;
@@ -51,11 +52,12 @@ public class SPINARQFunction implements com.hp.hpl.jena.sparql.function.Function
 	 * The spinFunction model be associated with the Model containing
 	 * the triples of its definition.
 	 * @param spinFunction  the SPIN function
+	 * @param registry TODO
 	 */
-	public SPINARQFunction(Function spinFunction) {
+	public SPINARQFunction(Function spinFunction, SPINModuleRegistry registry) {
 		try {
 			Query spinQuery = (Query) spinFunction.getBody();
-			queryString = spinQuery.toString();
+			queryString = spinQuery.toString(registry);
 			arqQuery = ARQFactory.get().createQuery(spinFunction.getModel(), queryString);
 			
 			for(Argument arg : spinFunction.getArguments(true)) {

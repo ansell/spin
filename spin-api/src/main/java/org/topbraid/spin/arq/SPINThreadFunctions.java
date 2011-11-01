@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.topbraid.spin.model.Function;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.vocabulary.SPIN;
 
@@ -32,7 +33,7 @@ public class SPINThreadFunctions {
 	}
 	
 	
-	FunctionFactory getFunctionFactory(String uri) {
+	FunctionFactory getFunctionFactory(String uri, SPINModuleRegistry registry) {
 		FunctionFactory old = functionsCache.get(uri);
 		if(old != null) {
 			return old;
@@ -41,12 +42,12 @@ public class SPINThreadFunctions {
 			return null;
 		}
 		else {
-			return getFunctionFactoryFromModel(uri);
+			return getFunctionFactoryFromModel(uri, registry);
 		}
 	}
 	
 	
-	PropertyFunctionFactory getPFunctionFactory(String uri) {
+	PropertyFunctionFactory getPFunctionFactory(String uri, SPINModuleRegistry registry) {
 		PropertyFunctionFactory old = pfunctionsCache.get(uri);
 		if(old != null) {
 			return old;
@@ -55,15 +56,15 @@ public class SPINThreadFunctions {
 			return null;
 		}
 		else {
-			return getPropertyFunctionFactoryFromModel(uri);
+			return getPropertyFunctionFactoryFromModel(uri, registry);
 		}
 	}
 
 
-	private FunctionFactory getFunctionFactoryFromModel(String uri) {
+	private FunctionFactory getFunctionFactoryFromModel(String uri, SPINModuleRegistry registry) {
 		Function spinFunction = model.getResource(uri).as(Function.class);
 		if(JenaUtil.hasIndirectType(spinFunction, (Resource)SPIN.Function.inModel(spinFunction.getModel()))) {
-			FunctionFactory arqFunction = SPINFunctionDrivers.get().create(spinFunction);
+			FunctionFactory arqFunction = SPINFunctionDrivers.get().create(spinFunction, registry);
 			if(arqFunction != null) {
 				functionsCache.put(uri, arqFunction);
 				return arqFunction;
@@ -75,11 +76,11 @@ public class SPINThreadFunctions {
 	}
 
 
-	private PropertyFunctionFactory getPropertyFunctionFactoryFromModel(String uri) {
+	private PropertyFunctionFactory getPropertyFunctionFactoryFromModel(String uri, SPINModuleRegistry registry) {
 		Function spinFunction = (Function) model.getResource(uri).as(Function.class);
 		if(JenaUtil.hasIndirectType(spinFunction, (Resource)SPIN.MagicProperty.inModel(spinFunction.getModel()))) {
 			if(spinFunction.hasProperty(SPIN.body)) {
-				final SPINARQPFunction arqFunction = new SPINARQPFunction(spinFunction);
+				final SPINARQPFunction arqFunction = new SPINARQPFunction(spinFunction, registry);
 				pfunctionsCache.put(uri, arqFunction);
 				return arqFunction;
 			}

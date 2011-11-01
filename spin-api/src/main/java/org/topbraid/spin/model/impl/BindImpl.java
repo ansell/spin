@@ -9,6 +9,7 @@ import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -46,12 +47,12 @@ public class BindImpl extends ElementImpl implements Bind {
 	}
 	
 	
-	public void print(PrintContext context) {
+	public void print(PrintContext context, SPINModuleRegistry registry) {
 		context.printKeyword("BIND");
 		context.print(" (");
 		RDFNode expression = getExpression();
 		if(expression != null) {
-			printNestedExpressionString(context, expression);
+			printNestedExpressionString(context, expression, registry);
 		}
 		else {
 			context.print("<Error: Missing expression>");
@@ -61,7 +62,7 @@ public class BindImpl extends ElementImpl implements Bind {
 		context.print(" ");
 		Variable variable = getVariable();
 		if(variable != null) {
-			context.print(variable.toString());
+			context.print(variable.toString(registry));
 		}
 		else {
 			context.print("<Error: Missing variable>");
@@ -70,7 +71,7 @@ public class BindImpl extends ElementImpl implements Bind {
 	}
 
 
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 }

@@ -6,6 +6,7 @@ package org.topbraid.spin.model.impl;
 
 import org.topbraid.spin.model.TriplePattern;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
 import com.hp.hpl.jena.graph.Node;
@@ -18,7 +19,7 @@ public class TriplePatternImpl extends TripleImpl implements TriplePattern {
 	}
 
 
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 }

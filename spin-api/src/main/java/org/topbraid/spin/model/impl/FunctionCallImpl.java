@@ -43,7 +43,7 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 		super(node, graph);
 	}
 	
-	
+	@Override
 	public List<RDFNode> getArguments() {
 		Map<Property,RDFNode> values = getArgumentsMap();
 		Property[] ps = getArgumentProperties(values);
@@ -86,6 +86,7 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	}
 	
 	
+    @Override
 	public Map<Property, RDFNode> getArgumentsMap() {
 		final Map<Property,RDFNode> values = new HashMap<Property,RDFNode>();
 		StmtIterator it = listProperties();
@@ -99,8 +100,14 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	}
 	
 	
+    @Override
 	public Resource getFunction() {
-		
+        return getFunction(SPINModuleRegistry.get());
+    }
+    
+    @Override
+    public Resource getFunction(SPINModuleRegistry registry) {
+            
 		// Need to iterate over rdf:types - some may have been inferred
 		// Return the most specific type, i.e. the one that does not have
 		// any subclasses
@@ -124,7 +131,7 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 				return type;
 			}
 			else {
-				Resource global = SPINModuleRegistry.get().getFunction(type.getURI(), null);
+				Resource global = registry.getFunction(type.getURI(), null);
 				if(global != null) {
 					return global;
 				}
@@ -141,7 +148,12 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	
 	@Override
 	public Module getModule() {
-		Resource function = getFunction();
+	    return getModule(SPINModuleRegistry.get());
+	}
+	
+    @Override
+    public Module getModule(SPINModuleRegistry registry) {
+	    Resource function = getFunction(registry);
 		if(function != null) {
 			return function.as(Function.class);
 		}
@@ -167,8 +179,9 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	}
 	
 	
-	public void print(PrintContext p) {
-		Resource function = getFunction();
+    @Override
+	public void print(PrintContext p, SPINModuleRegistry registry) {
+		Resource function = getFunction(registry);
 		List<RDFNode> args = getArguments();
 		
 		String symbol = getSymbol(function);
@@ -179,10 +192,10 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 			boolean set = isSetOperator(symbol);
 			if(args.size() == 1 && !set) {
 				p.print(symbol);
-				printNestedExpressionString(p, args.get(0));
+				printNestedExpressionString(p, args.get(0), registry);
 			}
 			else { // assuming params.size() == 2
-				printNestedExpressionString(p, args.get(0));
+				printNestedExpressionString(p, args.get(0), registry);
 				p.print(" ");
 				p.print(symbol);
 				p.print(" ");
@@ -193,12 +206,12 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 							p.print(", ");
 						}
 						RDFNode arg = args.get(i);
-						printNestedExpressionString(p, arg);
+						printNestedExpressionString(p, arg, registry);
 					}
 					p.print(")");
 				}
 				else {
-					printNestedExpressionString(p, args.get(1));
+					printNestedExpressionString(p, args.get(1), registry);
 				}
 			}
 			if(p.isNested()) {
@@ -208,7 +221,7 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 		else if(SP.exists.equals(function) || SP.notExists.equals(function)) {
 			p.print(symbol);
 			p.print(" ");
-			printNestedElementList(p, SP.elements);
+			printNestedElementList(p, SP.elements, registry);
 		}
 		else {
 			printFunctionQName(p, function);
@@ -216,7 +229,7 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 			Iterator<RDFNode> it = args.iterator();
 			while(it.hasNext()) {
 				RDFNode param = it.next();
-				printNestedExpressionString(p, param);
+				printNestedExpressionString(p, param, registry);
 				if(it.hasNext()) {
 					p.print(", ");
 				}

@@ -16,6 +16,7 @@ import org.topbraid.spin.model.SubQuery;
 import org.topbraid.spin.model.TriplePath;
 import org.topbraid.spin.model.TriplePattern;
 import org.topbraid.spin.model.Union;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 
 /**
@@ -25,51 +26,51 @@ import org.topbraid.spin.model.Union;
  */
 public abstract class AbstractElementVisitor implements ElementVisitor {
 
-	public void visit(ElementList elementList) {
+	public void visit(ElementList elementList, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(Filter filter) {
+	public void visit(Filter filter, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(Bind let) {
+	public void visit(Bind let, SPINModuleRegistry registry) {
 	}
 
 
 	@Override
-	public void visit(Minus minus) {
+	public void visit(Minus minus, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(NamedGraph namedGraph) {
+	public void visit(NamedGraph namedGraph, SPINModuleRegistry registry) {
 	}
 	
 	
-	public void visit(NotExists notExists) {
+	public void visit(NotExists notExists, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(Optional optional) {
+	public void visit(Optional optional, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(Service service) {
+	public void visit(Service service, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(SubQuery subQuery) {
+	public void visit(SubQuery subQuery, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(TriplePath triplePath) {
+	public void visit(TriplePath triplePath, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(TriplePattern triplePattern) {
+	public void visit(TriplePattern triplePattern, SPINModuleRegistry registry) {
 	}
 
 
-	public void visit(Union union) {
+	public void visit(Union union, SPINModuleRegistry registry) {
 	}
 }

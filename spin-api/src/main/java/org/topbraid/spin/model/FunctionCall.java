@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.topbraid.spin.model.print.Printable;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -45,4 +46,14 @@ public interface FunctionCall extends Printable, ModuleCall {
 	 * @return the function in its original Model
 	 */
 	Resource getFunction();
+
+
+    /**
+     * Gets the URI Resource of the Function being called here.
+     * The resulting Resource will be in the function's defining
+     * Model, for example if loaded into the library from a .spin. file.
+     * @param registry A global registry to search for types in, if necessary.
+     * @return the function in its original Model
+     */
+    Resource getFunction(SPINModuleRegistry registry);
 }

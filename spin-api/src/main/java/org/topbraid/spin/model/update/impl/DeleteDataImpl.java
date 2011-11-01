@@ -2,6 +2,7 @@ package org.topbraid.spin.model.update.impl;
 
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.update.DeleteData;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -16,10 +17,10 @@ public class DeleteDataImpl extends UpdateImpl implements DeleteData {
 
 	
 	@Override
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		p.printKeyword("DELETE");
 		p.print(" ");
 		p.printKeyword("DATA");
-		printTemplates(p, SP.data, null, true, null);
+		printTemplates(p, SP.data, null, true, null, registry);
 	}
 }

@@ -16,6 +16,7 @@ import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.print.StringPrintContext;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
 import com.hp.hpl.jena.graph.Node;
@@ -111,7 +112,7 @@ public class ElementListImpl extends RDFListImpl implements ElementList {
 	}
 	
 	
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		List<Element> elements = getElements();
 		
 		int oldI = -1;
@@ -126,17 +127,17 @@ public class ElementListImpl extends RDFListImpl implements ElementList {
 				p.print("{");
 				p.println();
 				p.setIndentation(p.getIndentation() + 1);
-				element.print(p);
+				element.print(p, registry);
 				p.setIndentation(p.getIndentation() - 1);
 				p.printIndentation(p.getIndentation());
 				p.print("}");
 			}
 			else {
 				if(element instanceof TriplePattern) {
-					i = printTriplePattern(elements, i, p);
+					i = printTriplePattern(elements, i, p, registry);
 				}
 				else {
-					element.print(p);
+					element.print(p, registry);
 				}
 			}
 			p.print(" .");
@@ -146,17 +147,17 @@ public class ElementListImpl extends RDFListImpl implements ElementList {
 	
 
 	// Special treatment of nested rdf:Lists
-	private int printTriplePattern(List<Element> elements, int i, PrintContext p) {
+	private int printTriplePattern(List<Element> elements, int i, PrintContext p, SPINModuleRegistry registry) {
 		TriplePattern main = (TriplePattern) elements.get(i);
 		
 		// Print subject
 		List<RDFNode> leftList = new ArrayList<RDFNode>();
 		i = addListMembers(elements, i, leftList);
 		if(leftList.isEmpty()) {
-			TupleImpl.print(getModel(), main.getSubject(), p);
+			TupleImpl.print(getModel(), main.getSubject(), p, registry);
 		}
 		else {
-			printRDFList(p, leftList);
+			printRDFList(p, leftList, registry);
 			main = (TriplePattern) elements.get(i);
 		}
 		p.print(" ");
@@ -166,7 +167,7 @@ public class ElementListImpl extends RDFListImpl implements ElementList {
 			p.print("a");
 		}
 		else {
-			TupleImpl.print(getModel(), main.getPredicate(), p);
+			TupleImpl.print(getModel(), main.getPredicate(), p, registry);
 		}
 		p.print(" ");
 		
@@ -175,42 +176,50 @@ public class ElementListImpl extends RDFListImpl implements ElementList {
 			List<RDFNode> rightList = new ArrayList<RDFNode>();
 			i = addListMembers(elements, i + 1, rightList);
 			if(rightList.isEmpty()) {
-				TupleImpl.print(getModel(), main.getObject(), p);
+				TupleImpl.print(getModel(), main.getObject(), p, registry);
 				if(!leftList.isEmpty()) {
 					i--;
 				}
 			}
 			else {
-				printRDFList(p, rightList);
+				printRDFList(p, rightList, registry);
 				i--;
 			}
 		}
 		else {
-			TupleImpl.print(getModel(), main.getObject(), p);
+			TupleImpl.print(getModel(), main.getObject(), p, registry);
 		}
 		return i;
 	}
 	
 	
-	private void printRDFList(PrintContext p, List<RDFNode> members) {
+	private void printRDFList(PrintContext p, List<RDFNode> members, SPINModuleRegistry registry) {
 		p.print("(");
 		for(RDFNode node : members) {
 			p.print(" ");
-			TupleImpl.print(getModel(), node, p);
+			TupleImpl.print(getModel(), node, p, registry);
 		}
 		p.print(" )");
 	}
 	
-	
+	/**
+	 * Prints the list of elements using the global registry as a reference
+	 */
+	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+	    return toString(SPINModuleRegistry.get());
+	}
+	
+	@Override
+	public String toString(SPINModuleRegistry registry) {
+	    StringBuilder sb = new StringBuilder();
 		PrintContext context = new StringPrintContext(sb);
-		print(context);
+		print(context, registry);
 		return sb.toString();
 	}
 
 
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 }

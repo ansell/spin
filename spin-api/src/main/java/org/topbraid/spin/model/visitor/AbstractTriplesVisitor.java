@@ -37,17 +37,20 @@ public abstract class AbstractTriplesVisitor {
 	private Map<Property,RDFNode> bindings;
 	
 	private Element element;
+
+    private SPINModuleRegistry registry;
 	
 	
-	public AbstractTriplesVisitor(Element element, Map<Property,RDFNode> initialBindings) {
+	public AbstractTriplesVisitor(Element element, Map<Property,RDFNode> initialBindings, SPINModuleRegistry registry) {
 		this.bindings = initialBindings;
 		this.element = element;
+		this.registry = registry;
 	}
 	
 	
 	public void run() {
 		ElementWalker walker = new ElementWalker(new MyElementVisitor(), new MyExpressionVisitor());
-		element.visit(walker);
+		element.visit(walker, registry);
 	}
 	
 
@@ -62,7 +65,7 @@ public abstract class AbstractTriplesVisitor {
 	private class MyElementVisitor extends AbstractElementVisitor {
 
 		@Override
-		public void visit(TriplePattern triplePattern) {
+		public void visit(TriplePattern triplePattern, SPINModuleRegistry registry) {
 			handleTriplePattern(triplePattern, bindings);
 		}
 	};
@@ -74,11 +77,11 @@ public abstract class AbstractTriplesVisitor {
 		private Set<FunctionCall> reachedFunctionCalls = new HashSet<FunctionCall>();
 
 		@Override
-		public void visit(FunctionCall functionCall) {
-			Resource function = functionCall.getFunction();
+		public void visit(FunctionCall functionCall, SPINModuleRegistry registry) {
+			Resource function = functionCall.getFunction(registry);
 			if(function != null && function.isURIResource() && !reachedFunctionCalls.contains(functionCall)) {
 				reachedFunctionCalls.add(functionCall);
-				Resource f = SPINModuleRegistry.get().getFunction(function.getURI(), null);
+				Resource f = registry.getFunction(function.getURI(), null);
 				if(f != null) {
 					Statement bodyS = f.getProperty(SPIN.body);
 					if(bodyS != null && bodyS.getObject().isResource()) {
@@ -94,7 +97,7 @@ public abstract class AbstractTriplesVisitor {
 						ElementList where = spinQuery.getWhere();
 						if(where != null) {
 							ElementWalker walker = new ElementWalker(new MyElementVisitor(), this);
-							where.visit(walker);
+							where.visit(walker, registry);
 						}
 						
 						bindings = oldBindings;

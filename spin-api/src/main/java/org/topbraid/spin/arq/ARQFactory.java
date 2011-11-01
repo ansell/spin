@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.topbraid.spin.model.print.StringPrintContext;
 import org.topbraid.spin.model.update.Update;
 import org.topbraid.spin.system.ExtraPrefixes;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.util.SPINExpressions;
 
@@ -106,15 +107,16 @@ public class ARQFactory {
 	 * This method is the recommended way of doing this task as it uses a cache
 	 * to prevent duplicate computations.
 	 * @param spinCommand  the SPIN Command to convert to String
+	 * @param registry TODO
 	 * @return the String
 	 */
-	public String createCommandString(org.topbraid.spin.model.Command spinCommand) {
+	public String createCommandString(org.topbraid.spin.model.Command spinCommand, SPINModuleRegistry registry) {
 		String result = node2String.get(spinCommand.asNode());
 		if(result == null) {
 			StringPrintContext p = new StringPrintContext();
 			p.setUsePrefixes(false);
 			p.setPrintPrefixes(false);
-			spinCommand.print(p);
+			spinCommand.print(p, registry);
 			result = p.getString();
 			if(useCaches) {
 				node2String.put(spinCommand.asNode(), result);
@@ -124,12 +126,12 @@ public class ARQFactory {
 	}
 	
 	
-	public String createExpressionString(RDFNode expression) {
+	public String createExpressionString(RDFNode expression, SPINModuleRegistry registry) {
 		String result = node2String.get(expression.asNode());
 		if(result == null) {
 			StringPrintContext p = new StringPrintContext();
 			p.setUsePrefixes(false);
-			SPINExpressions.printExpressionString(p, expression, false, false, expression.getModel().getGraph().getPrefixMapping());
+			SPINExpressions.printExpressionString(p, expression, false, false, expression.getModel().getGraph().getPrefixMapping(), registry);
 			result = p.getString();
 			if(useCaches) {
 				node2String.put(expression.asNode(), result);
@@ -139,8 +141,8 @@ public class ARQFactory {
 	}
 	
 	
-	public Query createExpressionQuery(RDFNode expression) {
-		String queryString = createExpressionString(expression);
+	public Query createExpressionQuery(RDFNode expression, SPINModuleRegistry registry) {
+		String queryString = createExpressionString(expression, registry);
 		return createExpressionQuery(queryString);
 	}
 	
@@ -204,12 +206,13 @@ public class ARQFactory {
 	 * This method is the recommended way for this conversion -
 	 * it uses a cache to retrieve queries that it has already seen before.
 	 * @param spinQuery  the SPIN query
+	 * @param registry TODO
 	 * @return the ARQ Query
 	 */
-	public Query createQuery(org.topbraid.spin.model.Query spinQuery) {
+	public Query createQuery(org.topbraid.spin.model.Query spinQuery, SPINModuleRegistry registry) {
 		Query result = string2Query.get(spinQuery);
 		if(result == null) {
-			String queryString = createCommandString(spinQuery);
+			String queryString = createCommandString(spinQuery, registry);
 			return createQuery(queryString);
 		}
 		else {
@@ -334,8 +337,8 @@ public class ARQFactory {
 	}
 	
 	
-	public UpdateRequest createUpdateRequest(Update spinUpdate) {
-		String string = createCommandString(spinUpdate);
+	public UpdateRequest createUpdateRequest(Update spinUpdate, SPINModuleRegistry registry) {
+		String string = createCommandString(spinUpdate, registry);
 		return createUpdateRequest(string);
 	}
 	

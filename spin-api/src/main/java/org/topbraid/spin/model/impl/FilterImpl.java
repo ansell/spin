@@ -8,6 +8,7 @@ import org.topbraid.spin.model.Filter;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -35,7 +36,7 @@ public class FilterImpl extends ElementImpl implements Filter {
 	}
 	
 	
-	public void print(PrintContext context) {
+	public void print(PrintContext context, SPINModuleRegistry registry) {
 		context.printKeyword("FILTER");
 		context.print(" ");
 		RDFNode expression = getExpression();
@@ -43,12 +44,12 @@ public class FilterImpl extends ElementImpl implements Filter {
 			context.print("<Error: Missing expression>");
 		}
 		else {
-			printNestedExpressionString(context, expression, true);
+			printNestedExpressionString(context, expression, true, registry);
 		}
 	}
 
 
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 }

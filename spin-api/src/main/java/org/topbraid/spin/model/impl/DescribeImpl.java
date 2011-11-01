@@ -12,6 +12,7 @@ import org.topbraid.spin.model.Describe;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -42,9 +43,9 @@ public class DescribeImpl extends QueryImpl implements Describe {
 	}
 	
 	
-	public void print(PrintContext context) {
+	public void print(PrintContext context, SPINModuleRegistry registry) {
 		printComment(context);
-		printPrefixes(context);
+		printPrefixes(context, registry);
 		context.printKeyword("DESCRIBE");
 		context.print(" ");
 		List<Resource> nodes = getResultNodes();
@@ -55,10 +56,10 @@ public class DescribeImpl extends QueryImpl implements Describe {
 			for(Iterator<Resource> nit = nodes.iterator(); nit.hasNext(); ) {
 				Resource node = nit.next();
 				if(node instanceof Variable) {
-					context.print(node.toString());
+					context.print(((Variable)node).toString(registry));
 				}
 				else {
-					printVarOrResource(context, node);
+					printVarOrResource(context, node, registry);
 				}
 				if(nit.hasNext()) {
 					context.print(" ");
@@ -68,8 +69,8 @@ public class DescribeImpl extends QueryImpl implements Describe {
 		printStringFrom(context);
 		if(!getWhereElements().isEmpty()) {
 			context.print(" ");
-			printWhere(context);
+			printWhere(context, registry);
 		}
-		printSolutionModifiers(context);
+		printSolutionModifiers(context, registry);
 	}
 }

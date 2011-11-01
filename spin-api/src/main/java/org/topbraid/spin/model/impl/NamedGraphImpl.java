@@ -9,6 +9,7 @@ import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -40,15 +41,15 @@ public class NamedGraphImpl extends ElementImpl implements NamedGraph {
 	}
 
 
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		p.printKeyword("GRAPH");
 		p.print(" ");
-		printVarOrResource(p, getNameNode());
-		printNestedElementList(p);
+		printVarOrResource(p, getNameNode(), registry);
+		printNestedElementList(p, registry);
 	}
 
 
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 }

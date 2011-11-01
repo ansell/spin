@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.topbraid.spin.model.QueryOrTemplateCall;
 import org.topbraid.spin.model.SPINInstance;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.util.SPINUtil;
 
@@ -26,10 +27,10 @@ public class SPINInstanceImpl extends ResourceImpl implements SPINInstance {
 	}
 
 	
-	public List<QueryOrTemplateCall> getQueriesAndTemplateCalls(Property predicate) {
+	public List<QueryOrTemplateCall> getQueriesAndTemplateCalls(Property predicate, SPINModuleRegistry registry) {
 		List<QueryOrTemplateCall> results = new LinkedList<QueryOrTemplateCall>();
 		for(Resource cls : JenaUtil.getAllTypes(this)) {
-			SPINUtil.addQueryOrTemplateCalls(cls, predicate, results);
+			SPINUtil.addQueryOrTemplateCalls(cls, predicate, results, registry);
 		}
 		return results;
 	}

@@ -7,6 +7,7 @@ package org.topbraid.spin.model.impl;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.TripleTemplate;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
 import com.hp.hpl.jena.graph.Node;
@@ -21,13 +22,13 @@ public class TripleTemplateImpl extends TripleImpl implements TripleTemplate {
 
 	
 	@Override
-	protected void print(RDFNode node, PrintContext p) {
+	protected void print(RDFNode node, PrintContext p, SPINModuleRegistry registry) {
 		if(node.isAnon() && SPINFactory.asVariable(node) == null) {
 			String str = p.getNodeToLabelMap().asString(node.asNode());
 			p.print(str);
 		}
 		else {
-			super.print(node, p);
+			super.print(node, p, registry);
 		}
 	}
 }

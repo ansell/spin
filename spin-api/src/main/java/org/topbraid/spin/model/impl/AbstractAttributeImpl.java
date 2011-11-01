@@ -6,6 +6,7 @@ package org.topbraid.spin.model.impl;
 
 import org.topbraid.spin.model.AbstractAttribute;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SPL;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -44,7 +45,7 @@ public abstract class AbstractAttributeImpl extends AbstractSPINResourceImpl imp
 	}
 
 
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		// TODO Auto-generated method stub
 
 	}

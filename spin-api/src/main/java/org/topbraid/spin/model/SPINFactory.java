@@ -237,15 +237,32 @@ public class SPINFactory {
 	/**
 	 * Checks whether a given RDFNode can be cast into TemplateCall, and returns
 	 * it as a TemplateCall instance if so.
+	 * 
+	 * This method uses the global SPIN module registry.
+	 * 
 	 * @param node  the node to convert
 	 * @return an instance of TemplateCall or null
 	 */
 	public static TemplateCall asTemplateCall(RDFNode node) {
-		if(node instanceof Resource) {
+	    return asTemplateCall(node, SPINModuleRegistry.get());
+	}
+	
+    /**
+     * Checks whether a given RDFNode can be cast into TemplateCall, and returns
+     * it as a TemplateCall instance if so.
+     * 
+     * This method only uses the given SPIN module registry
+     * 
+     * @param node  the node to convert
+     * @param registry The registry to use to find the definition for this template
+     * @return an instance of TemplateCall or null
+     */
+    public static TemplateCall asTemplateCall(RDFNode node, SPINModuleRegistry registry) {
+	    if(node instanceof Resource) {
 			Statement s = ((Resource)node).getProperty(RDF.type);
 			if(s != null && s.getObject().isURIResource()) {
 				String uri = s.getResource().getURI();
-				Template template = SPINModuleRegistry.get().getTemplate(uri, s.getModel());
+				Template template = registry.getTemplate(uri, s.getModel());
 				if(template != null) {
 					return (TemplateCall) node.as(TemplateCall.class);
 				}
@@ -735,11 +752,12 @@ public class SPINFactory {
 	 * a valid template assigned to it, i.e. the type of the node must be an
 	 * instance of spin:Template.
 	 * @param node  the RDFNode to check
+	 * @param registry TODO
 	 * @return true if node is a TemplateCall
 	 */
-	public static boolean isTemplateCall(RDFNode node) {
-		TemplateCall templateCall = asTemplateCall(node);
-		return templateCall != null && templateCall.getTemplate() != null;
+	public static boolean isTemplateCall(RDFNode node, SPINModuleRegistry registry) {
+		TemplateCall templateCall = asTemplateCall(node, registry);
+		return templateCall != null && templateCall.getTemplate(registry) != null;
 	}
 	
 	

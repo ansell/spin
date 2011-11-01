@@ -15,6 +15,7 @@ import org.topbraid.spin.model.QueryOrTemplateCall;
 import org.topbraid.spin.model.SPINInstance;
 import org.topbraid.spin.model.Template;
 import org.topbraid.spin.model.TemplateCall;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 import org.topbraid.spin.vocabulary.SPIN;
 
@@ -35,15 +36,15 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class RelevantProperties {
 
 
-	private static void addProperties(QueryOrTemplateCall qot, Set<Property> results) {
+	private static void addProperties(QueryOrTemplateCall qot, Set<Property> results, SPINModuleRegistry registry) {
 		Model model = qot.getCls().getModel();
 		if(qot.getTemplateCall() != null) {
 			TemplateCall templateCall = qot.getTemplateCall();
-			Template template = templateCall.getTemplate();
+			Template template = templateCall.getTemplate(registry);
 			if(template != null) {
 				Command spinQuery = template.getBody();
 				if(spinQuery instanceof Ask || spinQuery instanceof Construct) {
-					ObjectPropertiesGetter getter = new ObjectPropertiesGetter(model, ((Query)spinQuery).getWhere(), templateCall.getArgumentsMapByProperties());
+					ObjectPropertiesGetter getter = new ObjectPropertiesGetter(model, ((Query)spinQuery).getWhere(), templateCall.getArgumentsMapByProperties(registry), registry);
 					getter.run();
 					results.addAll(getter.getResults());
 				}
@@ -52,7 +53,7 @@ public class RelevantProperties {
 		else if(qot.getQuery() instanceof Ask || qot.getQuery() instanceof Construct) {
 			ElementList where = qot.getQuery().getWhere();
 			if(where != null) {
-				ObjectPropertiesGetter getter = new ObjectPropertiesGetter(model, where, null);
+				ObjectPropertiesGetter getter = new ObjectPropertiesGetter(model, where, null, registry);
 				getter.run();
 				results.addAll(getter.getResults());
 			}				
@@ -60,7 +61,7 @@ public class RelevantProperties {
 	}
 	
 	
-	public static Set<Property> getRelevantPropertiesOfClass(Resource cls) {
+	public static Set<Property> getRelevantPropertiesOfClass(Resource cls, SPINModuleRegistry registry) {
 		Set<Property> results = new HashSet<Property>();
 		
 		StmtIterator it = cls.getModel().listStatements(null, RDFS.domain, cls);
@@ -79,7 +80,7 @@ public class RelevantProperties {
 			}
 		}
 		
-		Set<Property> others = RelevantProperties.getRelevantSPINPropertiesOfClass(cls);
+		Set<Property> others = RelevantProperties.getRelevantSPINPropertiesOfClass(cls, registry);
 		if(others != null) {
 			for(Property other : others) {
 				results.add(other);
@@ -90,12 +91,12 @@ public class RelevantProperties {
 	}
 
 
-	public static Set<Property> getRelevantSPINPropertiesOfInstance(Resource root) {
+	public static Set<Property> getRelevantSPINPropertiesOfInstance(Resource root, SPINModuleRegistry registry) {
 		if(SP.exists(root.getModel())) {
 			SPINInstance instance = root.as(SPINInstance.class);
 			Set<Property> results = new HashSet<Property>();
-			for(QueryOrTemplateCall qot : instance.getQueriesAndTemplateCalls(SPIN.constraint)) {
-				addProperties(qot, results);
+			for(QueryOrTemplateCall qot : instance.getQueriesAndTemplateCalls(SPIN.constraint, registry)) {
+				addProperties(qot, results, registry);
 			}
 			return results;
 		}
@@ -105,13 +106,13 @@ public class RelevantProperties {
 	}
 
 
-	public static Set<Property> getRelevantSPINPropertiesOfClass(Resource cls) {
+	public static Set<Property> getRelevantSPINPropertiesOfClass(Resource cls, SPINModuleRegistry registry) {
 		if(SP.exists(cls.getModel())) {
 			List<QueryOrTemplateCall> qots = new ArrayList<QueryOrTemplateCall>();
-			SPINUtil.addQueryOrTemplateCalls(cls, SPIN.constraint, qots);
+			SPINUtil.addQueryOrTemplateCalls(cls, SPIN.constraint, qots, registry);
 			Set<Property> results = new HashSet<Property>();
 			for(QueryOrTemplateCall qot : qots) {
-				addProperties(qot, results);
+				addProperties(qot, results, registry);
 			}
 			return results;
 		}

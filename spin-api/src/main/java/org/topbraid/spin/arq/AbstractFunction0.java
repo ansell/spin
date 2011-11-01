@@ -4,6 +4,8 @@
  *******************************************************************************/
 package org.topbraid.spin.arq;
 
+import org.topbraid.spin.system.SPINModuleRegistry;
+
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.function.FunctionEnv;
@@ -16,8 +18,14 @@ import com.hp.hpl.jena.sparql.function.FunctionEnv;
  */
 public abstract class AbstractFunction0 extends AbstractFunction {
 
-	@Override
-	protected NodeValue exec(Node[] nodes, FunctionEnv env) {
+	public AbstractFunction0(SPINModuleRegistry registry)
+    {
+        super(registry);
+    }
+
+
+    @Override
+	protected NodeValue exec(Node[] nodes, FunctionEnv env, SPINModuleRegistry registry) {
 		return exec(env);
 	}
 	

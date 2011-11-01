@@ -17,6 +17,7 @@ import org.topbraid.base.progress.ProgressMonitor;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.statistics.SPINStatistics;
 import org.topbraid.spin.system.SPINLabels;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.AbstractGraphListener;
 import org.topbraid.spin.util.CommandWrapper;
 import org.topbraid.spin.util.JenaUtil;
@@ -62,10 +63,11 @@ public class SPINConstructors {
 	 * @param instances  the instances to run the constructors of
 	 * @param targetModel  the model that shall receive the new triples
 	 * @param monitor  an optional progress monitor
+	 * @param registry TODO
 	 */
-	public static void construct(Model queryModel, List<Resource> instances, Model targetModel, ProgressMonitor monitor) {
+	public static void construct(Model queryModel, List<Resource> instances, Model targetModel, ProgressMonitor monitor, SPINModuleRegistry registry) {
 		Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false);
+		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, registry);
 		construct(queryModel, instances, targetModel, new HashSet<Resource>(), class2Constructor, initialTemplateBindings, monitor);
 	}
 
@@ -325,8 +327,9 @@ public class SPINConstructors {
 	 * @param queryModel  the query model
 	 * @param targetModel  the model to write the new triples to
 	 * @param monitor  an optional progress monitor
+	 * @param registry TODO
 	 */
-	public static void constructAll(Model queryModel, Model targetModel, ProgressMonitor monitor) {
+	public static void constructAll(Model queryModel, Model targetModel, ProgressMonitor monitor, SPINModuleRegistry registry) {
 		Set<Resource> classes = getClassesWithConstructor(queryModel);
 		List<Resource> instances = new ArrayList<Resource>(getInstances(classes));
 		OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, queryModel);
@@ -334,7 +337,7 @@ public class SPINConstructors {
 			ontModel.addSubModel(targetModel);
 		}
 		Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false);
+		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, registry);
 		construct(ontModel, instances, targetModel, new HashSet<Resource>(), class2Constructor, initialTemplateBindings, monitor);
 	}
 	

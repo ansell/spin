@@ -10,6 +10,7 @@ import java.util.Set;
 import org.topbraid.spin.model.TriplePattern;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -60,7 +61,7 @@ public class VariableImpl extends AbstractSPINResourceImpl implements Variable {
 	}
 
 
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		String name = getName();
 		if(name.startsWith("?")) {
 			p.print("_:");

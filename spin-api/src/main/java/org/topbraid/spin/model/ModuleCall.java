@@ -4,6 +4,8 @@
  *******************************************************************************/
 package org.topbraid.spin.model;
 
+import org.topbraid.spin.system.SPINModuleRegistry;
+
 import com.hp.hpl.jena.rdf.model.Resource;
 
 
@@ -15,4 +17,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public interface ModuleCall extends Resource {
 	
 	Module getModule();
+
+    Module getModule(SPINModuleRegistry registry);
 }

@@ -6,6 +6,8 @@ package org.topbraid.spin.model;
 
 import java.util.List;
 
+import org.topbraid.spin.system.SPINModuleRegistry;
+
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -22,7 +24,8 @@ public interface SPINInstance extends Resource {
 	/**
 	 * Gets the queries and template calls associated with this.
 	 * @param predicate  the predicate such as <code>spin:rule</code>
+	 * @param registry TODO
 	 * @return a List of QueryOrTemplateCall instances
 	 */
-	List<QueryOrTemplateCall> getQueriesAndTemplateCalls(Property predicate);
+	List<QueryOrTemplateCall> getQueriesAndTemplateCalls(Property predicate, SPINModuleRegistry registry);
 }

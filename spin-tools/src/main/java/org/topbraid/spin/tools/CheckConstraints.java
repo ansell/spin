@@ -16,6 +16,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.ReificationStyle;
+import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -61,10 +62,10 @@ public class CheckConstraints {
 		OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
 
 		// Register locally defined functions
-		SPINModuleRegistry.get().registerAll(ontModel, null);
+		SPINModuleRegistry.get().registerAll(ontModel, null, SPINModuleRegistry.get(), FunctionRegistry.get());
 
 		// Perform constraint checking
-		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null);
+		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null, SPINModuleRegistry.get(), FunctionRegistry.get());
 		
 		// Create results model
 		Model results = ModelFactory.createDefaultModel();

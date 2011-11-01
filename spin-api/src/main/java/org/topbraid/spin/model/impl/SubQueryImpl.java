@@ -9,6 +9,7 @@ import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.SubQuery;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -35,13 +36,13 @@ public class SubQueryImpl extends ElementImpl implements SubQuery {
 	}
 
 	
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		p.print("{");
 		p.println();
 		Query query = getQuery();
 		if(query != null) {
 			p.setIndentation(p.getIndentation() + 1);
-			query.print(p);
+			query.print(p, registry);
 			p.setIndentation(p.getIndentation() - 1);
 		}
 		else {
@@ -53,7 +54,7 @@ public class SubQueryImpl extends ElementImpl implements SubQuery {
 	}
 
 	
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 }

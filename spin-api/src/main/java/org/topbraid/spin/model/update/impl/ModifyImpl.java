@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.update.Modify;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.vocabulary.SP;
 
@@ -32,9 +33,9 @@ public class ModifyImpl extends UpdateImpl implements Modify {
 	}
 
 	
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		printComment(p);
-		printPrefixes(p);
+		printPrefixes(p, registry);
 		
 		Resource iri = JenaUtil.getResourceProperty(this, SP.graphIRI);
 		
@@ -47,10 +48,10 @@ public class ModifyImpl extends UpdateImpl implements Modify {
 			p.println();
 		}
 
-		if(printTemplates(p, SP.deletePattern, "DELETE", hasProperty(SP.deletePattern), iri)) {
+		if(printTemplates(p, SP.deletePattern, "DELETE", hasProperty(SP.deletePattern), iri, registry)) {
 			p.print("\n");
 		}
-		if(printTemplates(p, SP.insertPattern, "INSERT", hasProperty(SP.insertPattern), iri)) {
+		if(printTemplates(p, SP.insertPattern, "INSERT", hasProperty(SP.insertPattern), iri, registry)) {
 			p.print("\n");
 		}
 
@@ -70,6 +71,6 @@ public class ModifyImpl extends UpdateImpl implements Modify {
 			p.println();
 		}
 		
-		printWhere(p);
+		printWhere(p, registry);
 	}
 }

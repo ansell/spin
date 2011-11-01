@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.topbraid.spin.model.Function;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaDatatypes;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -44,10 +45,10 @@ public class SPINFunctionDrivers implements SPINFunctionDriver {
 
 
 	@Override
-	public SPINFunctionFactory create(Function function) {
+	public SPINFunctionFactory create(Function function, SPINModuleRegistry registry) {
 		SPINFunctionDriver driver = getDriver(function);
 		if(driver != null) {
-			return driver.create(function);
+			return driver.create(function, registry);
 		}
 		else {
 			return null;

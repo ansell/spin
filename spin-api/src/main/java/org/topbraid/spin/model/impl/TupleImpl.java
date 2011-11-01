@@ -7,6 +7,7 @@ package org.topbraid.spin.model.impl;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.SPINExpressions;
 import org.topbraid.spin.vocabulary.SP;
 
@@ -66,29 +67,29 @@ abstract class TupleImpl extends AbstractSPINResourceImpl {
 	}
 
 
-	protected void print(RDFNode node, PrintContext p) {
-		TupleImpl.print(getModel(), node, p);
+	protected void print(RDFNode node, PrintContext p, SPINModuleRegistry registry) {
+		TupleImpl.print(getModel(), node, p, registry);
 	}
 
 
-	protected void print(RDFNode node, PrintContext p, boolean abbrevRDFType) {
-		TupleImpl.print(getModel(), node, p, abbrevRDFType);
+	protected void print(RDFNode node, PrintContext p, boolean abbrevRDFType, SPINModuleRegistry registry) {
+		TupleImpl.print(getModel(), node, p, abbrevRDFType, registry);
 	}
 
 
-	public static void print(Model model, RDFNode node, PrintContext p) {
-		print(model, node, p, false);
+	public static void print(Model model, RDFNode node, PrintContext p, SPINModuleRegistry registry) {
+		print(model, node, p, false, registry);
 	}
 	
 
-	public static void print(Model model, RDFNode node, PrintContext p, boolean abbrevRDFType) {
+	public static void print(Model model, RDFNode node, PrintContext p, boolean abbrevRDFType, SPINModuleRegistry registry) {
 		if(node instanceof Resource) {
 			if(abbrevRDFType && RDF.type.equals(node)) {
 				p.print("a");
 			}
 			else {
 				Resource resource = (Resource)node;
-				printVarOrResource(p, resource);
+				printVarOrResource(p, resource, registry);
 			}
 		}
 		else {

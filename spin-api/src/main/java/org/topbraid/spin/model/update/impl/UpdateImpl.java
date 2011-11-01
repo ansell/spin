@@ -17,6 +17,7 @@ import org.topbraid.spin.model.TripleTemplate;
 import org.topbraid.spin.model.impl.AbstractSPINResourceImpl;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.update.Update;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaDatatypes;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.vocabulary.SP;
@@ -102,7 +103,7 @@ public abstract class UpdateImpl extends AbstractSPINResourceImpl implements Upd
 	}
 	
 	
-	protected boolean printTemplates(PrintContext p, Property predicate, String keyword, boolean force, Resource graphIRI) {
+	protected boolean printTemplates(PrintContext p, Property predicate, String keyword, boolean force, Resource graphIRI, SPINModuleRegistry registry) {
 		List<RDFNode> nodes = getList(predicate);
 		if(!nodes.isEmpty() || force) {
 			if(keyword != null) {
@@ -117,7 +118,7 @@ public abstract class UpdateImpl extends AbstractSPINResourceImpl implements Upd
 				p.printIndentation(p.getIndentation());
 				p.printKeyword("GRAPH");
 				p.print(" ");
-				printVarOrResource(p, graphIRI);
+				printVarOrResource(p, graphIRI, registry);
 				p.print(" {");
 				p.println();
 			}
@@ -126,12 +127,12 @@ public abstract class UpdateImpl extends AbstractSPINResourceImpl implements Upd
 				if(node.canAs(NamedGraph.class)) {
 					NamedGraph namedGraph = node.as(NamedGraph.class);
 					p.setIndentation(p.getIndentation() + 1);
-					namedGraph.print(p);
+					namedGraph.print(p, registry);
 					p.setIndentation(p.getIndentation() - 1);
 				}
 				else {
 					TripleTemplate template = node.as(TripleTemplate.class);
-					template.print(p);
+					template.print(p, registry);
 				}
 				p.print(" .");
 				p.println();
@@ -152,9 +153,9 @@ public abstract class UpdateImpl extends AbstractSPINResourceImpl implements Upd
 	}
 
 
-	protected void printWhere(PrintContext p) {
+	protected void printWhere(PrintContext p, SPINModuleRegistry registry) {
 		p.printIndentation(p.getIndentation());
 		p.printKeyword("WHERE");
-		printNestedElementList(p, SP.where);
+		printNestedElementList(p, SP.where, registry);
 	}
 }

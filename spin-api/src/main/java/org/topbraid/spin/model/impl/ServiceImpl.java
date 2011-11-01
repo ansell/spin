@@ -9,6 +9,7 @@ import org.topbraid.spin.model.Service;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -47,7 +48,7 @@ public class ServiceImpl extends ElementImpl implements Service {
 	}
 
 
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		p.printKeyword("SERVICE");
 		Variable var = getServiceVariable();
 		if(var != null) {
@@ -61,11 +62,11 @@ public class ServiceImpl extends ElementImpl implements Service {
 				p.printURIResource(getModel().getResource(uri));
 			}
 		}
-		printNestedElementList(p);
+		printNestedElementList(p, registry);
 	}
 
 
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 }

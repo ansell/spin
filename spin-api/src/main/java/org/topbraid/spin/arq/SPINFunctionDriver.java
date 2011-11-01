@@ -5,6 +5,7 @@
 package org.topbraid.spin.arq;
 
 import org.topbraid.spin.model.Function;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 
 /**
@@ -18,7 +19,8 @@ public interface SPINFunctionDriver {
 	 * If this factory is responsible for the provided function Resource
 	 * then it must create a FunctionFactory which can then be registered.
 	 * @param function  the SPIN Function's resource
+	 * @param registry TODO
 	 * @return the FunctionFactory or null if this is not responsible
 	 */
-	SPINFunctionFactory create(Function function);
+	SPINFunctionFactory create(Function function, SPINModuleRegistry registry);
 }

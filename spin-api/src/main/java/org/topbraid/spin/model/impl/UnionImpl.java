@@ -11,6 +11,7 @@ import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.Union;
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.visitor.ElementVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
 import com.hp.hpl.jena.graph.Node;
@@ -23,14 +24,14 @@ public class UnionImpl extends ElementImpl implements Union {
 	}
 	
 	
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		List<Element> elements = getElements();
 		for(Iterator<Element> it = elements.iterator(); it.hasNext(); ) {
 			Element element = it.next();
 			p.print("{");
 			p.println();
 			p.setIndentation(p.getIndentation() + 1);
-			element.print(p);
+			element.print(p, registry);
 			p.setIndentation(p.getIndentation() - 1);
 			p.printIndentation(p.getIndentation());
 			p.print("}");
@@ -45,7 +46,7 @@ public class UnionImpl extends ElementImpl implements Union {
 	}
 
 
-	public void visit(ElementVisitor visitor) {
-		visitor.visit(this);
+	public void visit(ElementVisitor visitor, SPINModuleRegistry registry) {
+		visitor.visit(this, registry);
 	}
 }

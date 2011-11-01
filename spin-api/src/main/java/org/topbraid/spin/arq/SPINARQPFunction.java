@@ -15,6 +15,7 @@ import org.topbraid.spin.model.Function;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.system.MagicPropertyPolicy;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SPIN;
 
 import com.hp.hpl.jena.graph.Graph;
@@ -57,7 +58,7 @@ public class SPINARQPFunction extends PropertyFunctionBase implements PropertyFu
 	private List<String> objectVarNames = new ArrayList<String>();
 
 	
-	public SPINARQPFunction(Function functionCls) {
+	public SPINARQPFunction(Function functionCls, SPINModuleRegistry registry) {
 		try {
 			Select spinQuery = (Select) functionCls.getBody();
 			List<Resource> resultVariables = spinQuery.getResultVariables();
@@ -72,7 +73,7 @@ public class SPINARQPFunction extends PropertyFunctionBase implements PropertyFu
 					throw new IllegalArgumentException("SELECT with expressions not supported in magic properties");
 				}
 			}
-			queryString = spinQuery.toString();
+			queryString = spinQuery.toString(registry);
 			int selectStart = queryString.indexOf("SELECT ");
 			int eol = queryString.indexOf('\n', selectStart);
 			

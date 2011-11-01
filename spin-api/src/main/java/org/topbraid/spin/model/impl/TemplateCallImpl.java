@@ -30,9 +30,10 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 	}
 
 
-	public Map<Argument,RDFNode> getArgumentsMap() {
+    @Override
+	public Map<Argument,RDFNode> getArgumentsMap(SPINModuleRegistry registry) {
 		Map<Argument,RDFNode> map = new HashMap<Argument,RDFNode>();
-		Template template = getTemplate();
+		Template template = getTemplate(registry);
 		if(template != null) {
 			for(Argument ad : template.getArguments(false)) {
 				Property argProperty = ad.getPredicate();
@@ -49,9 +50,10 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 	}
 
 
-	public Map<Property, RDFNode> getArgumentsMapByProperties() {
+    @Override
+	public Map<Property, RDFNode> getArgumentsMapByProperties(SPINModuleRegistry registry) {
 		Map<Property,RDFNode> map = new HashMap<Property,RDFNode>();
-		Template template = getTemplate();
+		Template template = getTemplate(registry);
 		if(template != null) {
 			for(Argument ad : template.getArguments(false)) {
 				Property argProperty = ad.getPredicate();
@@ -68,9 +70,10 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 	}
 
 
-	public Map<String, RDFNode> getArgumentsMapByVarNames() {
+    @Override
+	public Map<String, RDFNode> getArgumentsMapByVarNames(SPINModuleRegistry registry) {
 		Map<String,RDFNode> map = new HashMap<String,RDFNode>();
-		Template template = getTemplate();
+		Template template = getTemplate(registry);
 		if(template != null) {
 			for(Argument ad : template.getArguments(false)) {
 				Property argProperty = ad.getPredicate();
@@ -89,24 +92,39 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 	
 	@Override
 	public Module getModule() {
-		return getTemplate();
+		return getModule(SPINModuleRegistry.get());
 	}
 
+    @Override
+    public Module getModule(SPINModuleRegistry registry) {
+        return getTemplate(registry);
+    }
 
+    @Override
 	public String getQueryString() {
-		Map<String,RDFNode> map = getArgumentsMapByVarNames();
+        return getQueryString(SPINModuleRegistry.get());
+    }
+    
+    @Override
+    public String getQueryString(SPINModuleRegistry registry) {
+		Map<String,RDFNode> map = getArgumentsMapByVarNames(registry);
 		StringPrintContext p = new StringPrintContext(new StringBuilder(), map);
-		Template template = getTemplate();
+		Template template = getTemplate(registry);
 		p.setUsePrefixes(false);
-		template.getBody().print(p);
+		template.getBody().print(p, registry);
 		return p.getString();
 	}
 
-
+	@Override
 	public Template getTemplate() {
+        return getTemplate(SPINModuleRegistry.get());
+	}
+	
+    @Override
+    public Template getTemplate(SPINModuleRegistry registry) {
 		Statement s = getProperty(RDF.type); //SPIN.template);
 		if(s != null && s.getObject().isURIResource()) {
-			return SPINModuleRegistry.get().getTemplate(s.getResource().getURI(), getModel());
+			return registry.getTemplate(s.getResource().getURI(), getModel());
 		}
 		else {
 			return null;
@@ -114,7 +132,8 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 	}
 
 
-	public void print(PrintContext p) {
+    @Override
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		// TODO Auto-generated method stub
 		
 	}

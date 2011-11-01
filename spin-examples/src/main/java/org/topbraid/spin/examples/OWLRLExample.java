@@ -25,6 +25,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.ReificationStyle;
+import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 
 
 /**
@@ -56,7 +57,7 @@ public class OWLRLExample {
 		OntModel owlrlModel = loadModelWithImports("http://topbraid.org/spin/owlrl-all");
 
 		// Register any new functions defined in OWL RL
-		SPINModuleRegistry.get().registerAll(owlrlModel, null);
+		SPINModuleRegistry.get().registerAll(owlrlModel, null, SPINModuleRegistry.get(), FunctionRegistry.get());
 		
 		// Build one big union Model of everything
 		MultiUnion multiUnion = new MultiUnion(new Graph[] {
@@ -67,13 +68,13 @@ public class OWLRLExample {
 		
 		// Collect rules (and template calls) defined in OWL RL
 		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(unionModel, queryModel, SPIN.rule, true, initialTemplateBindings, false);
-		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false);
+		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(unionModel, queryModel, SPIN.rule, true, initialTemplateBindings, false, SPINModuleRegistry.get());
+		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, SPINModuleRegistry.get());
 		SPINRuleComparator comparator = new DefaultSPINRuleComparator(queryModel);
 
 		// Run all inferences
 		System.out.println("Running SPIN inferences...");
-		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, false, SPIN.rule, comparator, null);
+		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, false, SPIN.rule, comparator, null, SPINModuleRegistry.get());
 		System.out.println("Inferred triples: " + newTriples.size());
 	}
 

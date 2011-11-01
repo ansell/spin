@@ -66,9 +66,10 @@ public class SPINExpressions {
 	 * @param expression  the expression (must be cast into the best possible type)
 	 * @param queryModel  the Model to query
 	 * @param bindings  the initial bindings
+	 * @param registry TODO
 	 * @return the result RDFNode or null
 	 */
-	public static RDFNode evaluate(Resource expression, Model queryModel, QuerySolution bindings) {
+	public static RDFNode evaluate(Resource expression, Model queryModel, QuerySolution bindings, SPINModuleRegistry registry) {
 		if(expression instanceof Variable) {
 			// Optimized case if the expression is just a variable
 			String varName = ((Variable)expression).getName();
@@ -78,7 +79,7 @@ public class SPINExpressions {
 			return expression;
 		}
 		else {
-			Query arq = ARQFactory.get().createExpressionQuery(expression);
+			Query arq = ARQFactory.get().createExpressionQuery(expression, registry);
 			QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, queryModel);
 			qexec.setInitialBinding(bindings);
 			ResultSet rs = qexec.execSelect();
@@ -95,20 +96,20 @@ public class SPINExpressions {
 	}
 	
 	
-	public static String getExpressionString(RDFNode expression) {
-		return getExpressionString(expression, true);
+	public static String getExpressionString(RDFNode expression, SPINModuleRegistry registry) {
+		return getExpressionString(expression, true, registry);
 	}
 	
 	
-	public static String getExpressionString(RDFNode expression, boolean usePrefixes) {
+	public static String getExpressionString(RDFNode expression, boolean usePrefixes, SPINModuleRegistry registry) {
 		if(usePrefixes) {
 			StringPrintContext p = new StringPrintContext();
 			p.setUsePrefixes(usePrefixes);
-			SPINExpressions.printExpressionString(p, expression, false, false, expression.getModel().getGraph().getPrefixMapping());
+			SPINExpressions.printExpressionString(p, expression, false, false, expression.getModel().getGraph().getPrefixMapping(), registry);
 			return p.getString();
 		}
 		else {
-			return ARQFactory.get().createExpressionString(expression);
+			return ARQFactory.get().createExpressionString(expression, registry);
 		}
 	}
 	
@@ -121,7 +122,11 @@ public class SPINExpressions {
 	 * @return true if node is an expression
 	 */
 	public static boolean isExpression(RDFNode node) {
-		if(node instanceof Resource && SP.exists(((Resource)node).getModel())) {
+	    return isExpression(node, SPINModuleRegistry.get(), FunctionRegistry.get());
+	}
+	
+    public static boolean isExpression(RDFNode node, SPINModuleRegistry registry, FunctionRegistry functionRegistry) {
+	    if(node instanceof Resource && SP.exists(((Resource)node).getModel())) {
 			RDFNode expr = SPINFactory.asExpression(node);
 			if(expr instanceof Variable) {
 				return true;
@@ -130,12 +135,12 @@ public class SPINExpressions {
 				return false;
 			}
 			if(expr instanceof FunctionCall) {
-				Resource function = ((FunctionCall)expr).getFunction();
+				Resource function = ((FunctionCall)expr).getFunction(registry);
 				if(function.isURIResource()) {
-					if(SPINModuleRegistry.get().getFunction(function.getURI(), ((Resource)node).getModel()) != null) {
+					if(registry.getFunction(function.getURI(), ((Resource)node).getModel()) != null) {
 						return true;
 					}
-					if(FunctionRegistry.get().isRegistered(function.getURI())) {
+					if(functionRegistry.isRegistered(function.getURI())) {
 						return true;
 					}
 				}
@@ -170,7 +175,7 @@ public class SPINExpressions {
 	}
 	
 
-	public static void printExpressionString(PrintContext p, RDFNode node, boolean nested, boolean force, PrefixMapping prefixMapping) {
+	public static void printExpressionString(PrintContext p, RDFNode node, boolean nested, boolean force, PrefixMapping prefixMapping, SPINModuleRegistry registry) {
 		if(node instanceof Resource && SPINFactory.asVariable(node) == null) {
 			Resource resource = (Resource) node;
 			
@@ -178,7 +183,7 @@ public class SPINExpressions {
 			if(aggr != null) {
 				PrintContext pc = p.clone();
 				pc.setNested(nested);
-				aggr.print(pc);
+				aggr.print(pc, registry);
 				return;
 			}
 			
@@ -186,7 +191,7 @@ public class SPINExpressions {
 			if(call != null) {
 				PrintContext pc = p.clone();
 				pc.setNested(nested);
-				call.print(pc);
+				call.print(pc, registry);
 				return;
 			}
 		}
@@ -194,7 +199,7 @@ public class SPINExpressions {
 			p.print("(");
 		}
 		if(node instanceof Resource) {
-			AbstractSPINResourceImpl.printVarOrResource(p, (Resource)node);
+			AbstractSPINResourceImpl.printVarOrResource(p, (Resource)node, registry);
 		}
 		else {
 			PrefixMapping pm = p.getUsePrefixes() ? prefixMapping : emptyPrefixMapping;

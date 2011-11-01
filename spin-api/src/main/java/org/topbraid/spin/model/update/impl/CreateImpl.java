@@ -2,6 +2,7 @@ package org.topbraid.spin.model.update.impl;
 
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.update.Create;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.vocabulary.SP;
 
@@ -17,7 +18,7 @@ public class CreateImpl extends UpdateImpl implements Create {
 
 	
 	@Override
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		p.printKeyword("CREATE");
 		p.print(" ");
 		printSilent(p);

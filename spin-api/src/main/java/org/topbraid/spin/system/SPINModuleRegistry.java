@@ -62,9 +62,16 @@ public class SPINModuleRegistry {
 	private Map<String, Template> templates = new HashMap<String, Template>();
 
 	
-	private static SPINModuleRegistry singleton = new SPINModuleRegistry();
+	private static SPINModuleRegistry singleton = new SPINModuleRegistry(FunctionRegistry.get());
+
+    private FunctionRegistry functionRegistry;
 	
-	
+	public SPINModuleRegistry(FunctionRegistry functionRegistry)
+	{
+	    this.functionRegistry = functionRegistry;
+	}
+    
+    
 	/**
 	 * Gets the singleton instance of this class.
 	 * @return the singleton
@@ -120,10 +127,10 @@ public class SPINModuleRegistry {
 	 */
 	public Set<Model> getModels() {
 		Set<Model> spinModels = new HashSet<Model>();
-		for(Function function : SPINModuleRegistry.get().getFunctions()) {
+		for(Function function : getFunctions()) {
 			spinModels.add(function.getModel());
 		}
-		for(Template template : SPINModuleRegistry.get().getTemplates()) {
+		for(Template template : getTemplates()) {
 			spinModels.add(template.getModel());
 		}
 		return spinModels;
@@ -174,9 +181,9 @@ public class SPINModuleRegistry {
 		});
 		multiUnion.setBaseGraph(splModel.getGraph());
 		Model unionModel = ModelFactory.createModelForGraph(multiUnion);
-		registerAll(unionModel, null);
+        registerAll(unionModel, null, this, functionRegistry);
 
-		FunctionRegistry.get().put(SPIN.eval.getURI(), new EvalFunction());
+		functionRegistry.put(SPIN.eval.getURI(), new EvalFunction(this));
 	}
 	
 	
@@ -192,17 +199,19 @@ public class SPINModuleRegistry {
 	 * @param function  the Function (must be a URI resource)
 	 * @param source  an optional source for the function (e.g. a File)
 	 * @param addARQFunction  true to also add an entry to the ARQ function registry
+	 * @param registry TODO
+	 * @param functionRegistry TODO
 	 */
-	public void register(Function function, Object source, boolean addARQFunction) {
+	public void register(Function function, Object source, boolean addARQFunction, SPINModuleRegistry registry, FunctionRegistry functionRegistry) {
 		functions.put(function.getURI(), function);
 		if(source != null) {
 			sources.put(function.asNode(), source);
 		}
 		ExtraPrefixes.add(function);
 		if(addARQFunction) {
-			registerARQFunction(function);
+			registerARQFunction(function, registry, functionRegistry);
 			if(function.hasProperty(RDF.type, SPIN.MagicProperty)) {
-				registerARQPFunction(function);
+				registerARQPFunction(function, registry);
 			}
 		}
 	}
@@ -229,9 +238,11 @@ public class SPINModuleRegistry {
 	 * SPARQL string.  In a typical use case, the Model would be
 	 * an OntModel that also imports the SPIN system namespaces.</b>
 	 * @param model  the Model to iterate over
+	 * @param registry TODO
+	 * @param functionRegistry TODO
 	 */
-	public void registerAll(Model model, Object source) {
-		registerFunctions(model, source);
+	public void registerAll(Model model, Object source, SPINModuleRegistry registry, FunctionRegistry functionRegistry) {
+		registerFunctions(model, source, registry, functionRegistry);
 		registerTemplates(model);
 	}
 
@@ -242,13 +253,15 @@ public class SPINModuleRegistry {
 	 * If there is an existing function with the same URI already registered,
 	 * then it will only be replaced if it is also a SPINARQFunction.
 	 * @param spinFunction  the function to register
+	 * @param registry TODO
+	 * @param functionRegistry TODO
 	 */
-	protected void registerARQFunction(Function spinFunction) {
-		FunctionFactory oldFF = FunctionRegistry.get().get(spinFunction.getURI());
+	protected void registerARQFunction(Function spinFunction, SPINModuleRegistry registry, FunctionRegistry functionRegistry) {
+		FunctionFactory oldFF = functionRegistry.get(spinFunction.getURI());
 		if(oldFF == null || oldFF instanceof SPINFunctionFactory) { // Never overwrite native Java functions
-			SPINFunctionFactory newFF = SPINFunctionDrivers.get().create(spinFunction);
+			SPINFunctionFactory newFF = SPINFunctionDrivers.get().create(spinFunction, registry);
 			if(newFF != null) {
-				FunctionRegistry.get().put(spinFunction.getURI(), newFF);
+				functionRegistry.put(spinFunction.getURI(), newFF);
 			}
 		}
 	}
@@ -260,12 +273,13 @@ public class SPINModuleRegistry {
 	 * If there is an existing function with the same URI already registered,
 	 * then it will only be replaced if it is also a SPINARQPFunction.
 	 * @param function  the function to register
+	 * @param registry TODO
 	 */
-	public void registerARQPFunction(Function function) {
+	public void registerARQPFunction(Function function, SPINModuleRegistry registry) {
 		if(function.hasProperty(SPIN.body)) {
 			PropertyFunctionFactory old = PropertyFunctionRegistry.get().get(function.getURI());
 			if(old == null || old instanceof SPINARQPFunction) {
-				SPINARQPFunction arqFunction = new SPINARQPFunction(function);
+				SPINARQPFunction arqFunction = new SPINARQPFunction(function, registry);
 				PropertyFunctionRegistry.get().put(function.getURI(), arqFunction);
 			}
 		}
@@ -278,11 +292,13 @@ public class SPINModuleRegistry {
 	 * <code>register(function)</code> for each of them.
 	 * @param model  the Model to add the functions of
 	 * @param source  an optional source of the Model
+	 * @param registry TODO
+	 * @param functionRegistry TODO
 	 */
-	public void registerFunctions(Model model, Object source) {
+	public void registerFunctions(Model model, Object source, SPINModuleRegistry registry, FunctionRegistry functionRegistry) {
 		for(Resource resource : JenaUtil.getAllInstances((Resource)SPIN.Function.inModel(model))) {
 			Function function = SPINFactory.asFunction(resource);
-			register(function, source, true);
+			register(function, source, true, registry, functionRegistry);
 		}
 	}
 

@@ -6,6 +6,7 @@ package org.topbraid.spin.model.impl;
 
 import org.topbraid.spin.model.Triple;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -25,11 +26,11 @@ public abstract class TripleImpl extends TupleImpl implements Triple {
 	}
 	
 	
-	public void print(PrintContext p) {
-		print(getSubject(), p);
+	public void print(PrintContext p, SPINModuleRegistry registry) {
+		print(getSubject(), p, registry);
 		p.print(" ");
-		print(getPredicate(), p, true);
+		print(getPredicate(), p, true, registry);
 		p.print(" ");
-		print(getObject(), p);
+		print(getObject(), p, registry);
 	}
 }

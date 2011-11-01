@@ -78,6 +78,7 @@ import org.topbraid.spin.model.update.impl.DropImpl;
 import org.topbraid.spin.model.update.impl.InsertDataImpl;
 import org.topbraid.spin.model.update.impl.LoadImpl;
 import org.topbraid.spin.model.update.impl.ModifyImpl;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.SimpleImplementation;
 import org.topbraid.spin.util.SimpleImplementation2;
 
@@ -444,12 +445,12 @@ public class SP {
     }
 
 
-	public static void toStringElementList(StringBuffer buffer, Resource resource) {
+	public static void toStringElementList(StringBuffer buffer, Resource resource, SPINModuleRegistry registry) {
 		RDFList list = (RDFList) resource.as(RDFList.class);
 		for(ExtendedIterator<RDFNode> it = list.iterator(); it.hasNext(); ) {
 			Resource item = (Resource) it.next();
 			Element e = SPINFactory.asElement(item);
-			buffer.append(e.toString());
+			buffer.append(e.toString(registry));
 			if(it.hasNext()) {
 				buffer.append(" .\n");
 			}

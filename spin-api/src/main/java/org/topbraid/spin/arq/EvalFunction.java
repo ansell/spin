@@ -7,6 +7,7 @@ package org.topbraid.spin.arq;
 import org.topbraid.spin.model.Ask;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Select;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.SPINExpressions;
 import org.topbraid.spin.vocabulary.SP;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -44,14 +45,20 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 public class EvalFunction extends AbstractFunction implements FunctionFactory {
 
-	@Override
+	public EvalFunction(SPINModuleRegistry registry)
+    {
+        super(registry);
+    }
+
+
+    @Override
 	public Function create(String uri) {
 		return this;
 	}
 
 	
 	@Override
-	protected NodeValue exec(Node[] nodes, FunctionEnv env) {
+	protected NodeValue exec(Node[] nodes, FunctionEnv env, SPINModuleRegistry registry) {
 		
 		Model baseModel = ModelFactory.createModelForGraph(env.getActiveGraph());
 		Node exprNode = nodes[0];
@@ -74,7 +81,7 @@ public class EvalFunction extends AbstractFunction implements FunctionFactory {
 			QuerySolutionMap bindings = getBindings(nodes, model);
 			org.topbraid.spin.model.Query spinQuery = SPINFactory.asQuery((Resource)exprRDFNode);
 			if(spinQuery instanceof Select || spinQuery instanceof Ask) {
-				Query query = ARQFactory.get().createQuery((org.topbraid.spin.model.Query)spinQuery);
+				Query query = ARQFactory.get().createQuery((org.topbraid.spin.model.Query)spinQuery, registry);
 				QueryExecution qexec = ARQFactory.get().createQueryExecution(query, model, bindings);
 				if(query.isAskType()) {
 					boolean result = qexec.execAsk();
@@ -94,7 +101,7 @@ public class EvalFunction extends AbstractFunction implements FunctionFactory {
 			}
 			else {
 				RDFNode expr = SPINFactory.asExpression(exprRDFNode);
-				RDFNode result = SPINExpressions.evaluate((Resource) expr, model, bindings);
+				RDFNode result = SPINExpressions.evaluate((Resource) expr, model, bindings, registry);
 				if(result != null) {
 					return NodeValue.makeNode(result.asNode());
 				}

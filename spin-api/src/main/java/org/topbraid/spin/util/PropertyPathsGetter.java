@@ -16,6 +16,7 @@ import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.TriplePattern;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.visitor.AbstractTriplesVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 import org.topbraid.spin.vocabulary.SPIN;
 
@@ -40,8 +41,8 @@ public class PropertyPathsGetter extends AbstractTriplesVisitor {
 	private Model targetModel;
 	
 	
-	public PropertyPathsGetter(Element element, Map<Property,RDFNode> initialBindings) {
-		super(element, initialBindings);
+	public PropertyPathsGetter(Element element, Map<Property,RDFNode> initialBindings, SPINModuleRegistry registry) {
+		super(element, initialBindings, registry);
 		this.targetModel = element.getModel();
 		this.localThis = (Resource) SPIN._this.inModel(targetModel);
 	}

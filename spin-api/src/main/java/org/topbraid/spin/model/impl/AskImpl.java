@@ -6,6 +6,7 @@ package org.topbraid.spin.model.impl;
 
 import org.topbraid.spin.model.Ask;
 import org.topbraid.spin.model.print.PrintContext;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
 import com.hp.hpl.jena.graph.Node;
@@ -18,9 +19,9 @@ public class AskImpl extends QueryImpl implements Ask {
 	}
 	
 	
-	public void print(PrintContext context) {
+	public void print(PrintContext context, SPINModuleRegistry registry) {
 		printComment(context);
-		printPrefixes(context);
+		printPrefixes(context, registry);
 		context.printIndentation(context.getIndentation());
 		context.printKeyword("ASK");
 		printStringFrom(context);
@@ -29,6 +30,6 @@ public class AskImpl extends QueryImpl implements Ask {
 			// Avoid unnecessary whitespace after ASK -> put on extra row
 			context.println();
 		}
-		printWhere(context);
+		printWhere(context, registry);
 	}
 }

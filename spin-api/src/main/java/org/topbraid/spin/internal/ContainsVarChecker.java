@@ -20,6 +20,7 @@ import org.topbraid.spin.model.visitor.AbstractExpressionVisitor;
 import org.topbraid.spin.model.visitor.ElementVisitor;
 import org.topbraid.spin.model.visitor.ElementWalker;
 import org.topbraid.spin.model.visitor.ExpressionVisitor;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.rdf.model.RDFList;
@@ -43,7 +44,7 @@ public class ContainsVarChecker {
 	private Resource var;
 	
 
-	public boolean contains(CommandWithWhere command, Resource var_) {
+	public boolean contains(CommandWithWhere command, Resource var_, SPINModuleRegistry registry) {
 		
 		this.var = var_;
 
@@ -69,7 +70,7 @@ public class ContainsVarChecker {
 		ElementVisitor el = new AbstractElementVisitor() {
 
 			@Override
-			public void visit(TriplePath triplePath) {
+			public void visit(TriplePath triplePath, SPINModuleRegistry registry) {
 				if(var.equals(triplePath.getObject()) ||
 					var.equals(triplePath.getSubject())) {
 					result = true;
@@ -77,7 +78,7 @@ public class ContainsVarChecker {
 			}
 
 			@Override
-			public void visit(TriplePattern triplePattern) {
+			public void visit(TriplePattern triplePattern, SPINModuleRegistry registry) {
 				if(containsVar(triplePattern)) {
 					result = true;
 				}
@@ -86,7 +87,7 @@ public class ContainsVarChecker {
 		ExpressionVisitor ex = new AbstractExpressionVisitor() {
 
 			@Override
-			public void visit(Variable variable) {
+			public void visit(Variable variable, SPINModuleRegistry registry) {
 				if(var.equals(variable)) {
 					result = true;
 				}
@@ -95,7 +96,7 @@ public class ContainsVarChecker {
 		ElementWalker walker = new ElementWalker(el, ex);
 		ElementList where = command.getWhere();
 		if(where != null) {
-			walker.visit(where);
+			walker.visit(where, registry);
 		}
 		
 		return result;

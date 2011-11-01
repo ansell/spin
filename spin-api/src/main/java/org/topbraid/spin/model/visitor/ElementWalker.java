@@ -20,6 +20,7 @@ import org.topbraid.spin.model.SubQuery;
 import org.topbraid.spin.model.TriplePath;
 import org.topbraid.spin.model.TriplePattern;
 import org.topbraid.spin.model.Union;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
@@ -43,88 +44,88 @@ public class ElementWalker implements ElementVisitor {
 	}
 
 
-	public void visit(Bind bind) {
-		elementVisitor.visit(bind);
-		visitExpression(bind.getExpression());
+	public void visit(Bind bind, SPINModuleRegistry registry) {
+		elementVisitor.visit(bind, registry);
+		visitExpression(bind.getExpression(), registry);
 	}
 
 	
-	public void visit(ElementList elementList) {
-		elementVisitor.visit(elementList);
-		visitChildren(elementList);
+	public void visit(ElementList elementList, SPINModuleRegistry registry) {
+		elementVisitor.visit(elementList, registry);
+		visitChildren(elementList, registry);
 	}
 
 
-	public void visit(Filter filter) {
-		elementVisitor.visit(filter);
-		visitExpression(filter.getExpression());
+	public void visit(Filter filter, SPINModuleRegistry registry) {
+		elementVisitor.visit(filter, registry);
+		visitExpression(filter.getExpression(), registry);
 	}
 
 
 	@Override
-	public void visit(Minus minus) {
-		elementVisitor.visit(minus);
-		visitChildren(minus);
+	public void visit(Minus minus, SPINModuleRegistry registry) {
+		elementVisitor.visit(minus, registry);
+		visitChildren(minus, registry);
 	}
 
 
-	public void visit(NamedGraph namedGraph) {
-		elementVisitor.visit(namedGraph);
-		visitChildren(namedGraph);
+	public void visit(NamedGraph namedGraph, SPINModuleRegistry registry) {
+		elementVisitor.visit(namedGraph, registry);
+		visitChildren(namedGraph, registry);
 	}
 
 
-	public void visit(NotExists notExists) {
-		elementVisitor.visit(notExists);
-		visitChildren(notExists);
+	public void visit(NotExists notExists, SPINModuleRegistry registry) {
+		elementVisitor.visit(notExists, registry);
+		visitChildren(notExists, registry);
 	}
 
 
-	public void visit(Optional optional) {
-		elementVisitor.visit(optional);
-		visitChildren(optional);
+	public void visit(Optional optional, SPINModuleRegistry registry) {
+		elementVisitor.visit(optional, registry);
+		visitChildren(optional, registry);
 	}
 
 
-	public void visit(Service service) {
-		elementVisitor.visit(service);
-		visitChildren(service);
+	public void visit(Service service, SPINModuleRegistry registry) {
+		elementVisitor.visit(service, registry);
+		visitChildren(service, registry);
 	}
 
 
-	public void visit(SubQuery subQuery) {
-		elementVisitor.visit(subQuery);
+	public void visit(SubQuery subQuery, SPINModuleRegistry registry) {
+		elementVisitor.visit(subQuery, registry);
 	}
 
 
-	public void visit(TriplePath triplePath) {
-		elementVisitor.visit(triplePath);
+	public void visit(TriplePath triplePath, SPINModuleRegistry registry) {
+		elementVisitor.visit(triplePath, registry);
 	}
 
 
-	public void visit(TriplePattern triplePattern) {
-		elementVisitor.visit(triplePattern);
+	public void visit(TriplePattern triplePattern, SPINModuleRegistry registry) {
+		elementVisitor.visit(triplePattern, registry);
 	}
 
 
-	public void visit(Union union) {
-		elementVisitor.visit(union);
-		visitChildren(union);
+	public void visit(Union union, SPINModuleRegistry registry) {
+		elementVisitor.visit(union, registry);
+		visitChildren(union, registry);
 	}
 	
 	
-	private void visitChildren(ElementGroup group) {
+	private void visitChildren(ElementGroup group, SPINModuleRegistry registry) {
 		List<Element> childElements = group.getElements();
 		for(Element childElement : childElements) {
-			childElement.visit(this);
+			childElement.visit(this, registry);
 		}
 	}
 	
 	
-	private void visitExpression(RDFNode node) {
+	private void visitExpression(RDFNode node, SPINModuleRegistry registry) {
 		if(expressionVisitor != null) {
 			ExpressionWalker expressionWalker = new ExpressionWalker(expressionVisitor);
-			ExpressionVisitors.visit(node, expressionWalker);
+			ExpressionVisitors.visit(node, expressionWalker, registry);
 		}
 	}
 }

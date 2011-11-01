@@ -24,6 +24,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
@@ -80,7 +81,11 @@ public class SPINImports {
 	 * @return either model or the union of model and its spin:imports
 	 */
 	public Model getImportsModel(Model model) throws IOException {
-		Set<String> uris = new HashSet<String>();
+	    return getImportsModel(model, SPINModuleRegistry.get(), FunctionRegistry.get());
+	}
+	
+    public Model getImportsModel(Model model, SPINModuleRegistry registry, FunctionRegistry functionRegistry) throws IOException {
+	    Set<String> uris = new HashSet<String>();
 		StmtIterator it = model.listStatements(null, SPIN.imports, (RDFNode)null);
 		while(it.hasNext()) {
 			Statement s = it.nextStatement();
@@ -117,7 +122,7 @@ public class SPINImports {
 			
 			Model unionModel = ModelFactory.createModelForGraph(union);
 			if(needsRegistration) {
-				SPINModuleRegistry.get().registerAll(unionModel, null);
+				registry.registerAll(unionModel, null, registry, functionRegistry);
 			}
 			return unionModel;
 		}

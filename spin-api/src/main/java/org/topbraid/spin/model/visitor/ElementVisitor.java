@@ -16,6 +16,7 @@ import org.topbraid.spin.model.SubQuery;
 import org.topbraid.spin.model.TriplePath;
 import org.topbraid.spin.model.TriplePattern;
 import org.topbraid.spin.model.Union;
+import org.topbraid.spin.system.SPINModuleRegistry;
 
 
 /**
@@ -25,38 +26,38 @@ import org.topbraid.spin.model.Union;
  */
 public interface ElementVisitor {
 	
-	void visit(ElementList elementList);
+	void visit(ElementList elementList, SPINModuleRegistry registry);
 	
 	
-	void visit(Filter filter);
+	void visit(Filter filter, SPINModuleRegistry registry);
 	
 	
-	void visit(Bind bind);
+	void visit(Bind bind, SPINModuleRegistry registry);
 	
 	
-	void visit(Minus minus);
+	void visit(Minus minus, SPINModuleRegistry registry);
 	
 	
-	void visit(NamedGraph namedGraph);
+	void visit(NamedGraph namedGraph, SPINModuleRegistry registry);
 	
 	
-	void visit(NotExists notExists);
+	void visit(NotExists notExists, SPINModuleRegistry registry);
 	
 	
-	void visit(Optional optional);
+	void visit(Optional optional, SPINModuleRegistry registry);
 
 	
-	void visit(Service service);
+	void visit(Service service, SPINModuleRegistry registry);
 	
 	
-	void visit(SubQuery subQuery);
+	void visit(SubQuery subQuery, SPINModuleRegistry registry);
 	
 	
-	void visit(TriplePath triplePath);
+	void visit(TriplePath triplePath, SPINModuleRegistry registry);
 
 	
-	void visit(TriplePattern triplePattern);
+	void visit(TriplePattern triplePattern, SPINModuleRegistry registry);
 	
 	
-	void visit(Union union);
+	void visit(Union union, SPINModuleRegistry registry);
 }

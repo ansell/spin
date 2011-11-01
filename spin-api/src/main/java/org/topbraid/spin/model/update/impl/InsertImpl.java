@@ -6,6 +6,7 @@ package org.topbraid.spin.model.update.impl;
 
 import org.topbraid.spin.model.print.PrintContext;
 import org.topbraid.spin.model.update.Insert;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SP;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
@@ -19,13 +20,13 @@ public class InsertImpl extends UpdateImpl implements Insert {
 	}
 
 	
-	public void print(PrintContext p) {
+	public void print(PrintContext p, SPINModuleRegistry registry) {
 		printComment(p);
-		printPrefixes(p);
+		printPrefixes(p, registry);
 		p.printIndentation(p.getIndentation());
 		p.printKeyword("INSERT");
 		printGraphIRIs(p, "INTO");
-		printTemplates(p, SP.insertPattern, null, true, null);
-		printWhere(p);
+		printTemplates(p, SP.insertPattern, null, true, null, registry);
+		printWhere(p, registry);
 	}
 }

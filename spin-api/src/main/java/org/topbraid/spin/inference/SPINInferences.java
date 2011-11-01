@@ -16,6 +16,7 @@ import org.topbraid.base.progress.ProgressMonitor;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.statistics.SPINStatistics;
 import org.topbraid.spin.system.SPINLabels;
+import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.CommandWrapper;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.util.QueryWrapper;
@@ -86,8 +87,9 @@ public class SPINInferences {
 	 * @param statistics  optional list to add statistics about which queries were slow
 	 * @param singlePass  true to just do a single pass (don't iterate)
 	 * @param monitor  an optional ProgressMonitor
+	 * @param registry TODO
 	 * @return the number of iterations (1 with singlePass)
-	 * @see #run(Model, Property, Model, SPINExplanations, List, boolean, ProgressMonitor)
+	 * @see #run(Model, Property, Model, SPINExplanations, List, boolean, ProgressMonitor, SPINModuleRegistry)
 	 */
 	public static int run(
 			Model queryModel, 
@@ -95,8 +97,8 @@ public class SPINInferences {
 			SPINExplanations explanations,
 			List<SPINStatistics> statistics,
 			boolean singlePass, 
-			ProgressMonitor monitor) {
-		return run(queryModel, SPIN.rule, newTriples, explanations, statistics, singlePass, monitor);
+			ProgressMonitor monitor, SPINModuleRegistry registry) {
+		return run(queryModel, SPIN.rule, newTriples, explanations, statistics, singlePass, monitor, registry);
 	}
 	
 	
@@ -115,6 +117,7 @@ public class SPINInferences {
 	 * @param statistics  optional list to add statistics about which queries were slow
 	 * @param singlePass  true to just do a single pass (don't iterate)
 	 * @param monitor  an optional ProgressMonitor
+	 * @param registry TODO
 	 * @return the number of iterations (1 with singlePass)
 	 */
 	public static int run(
@@ -124,12 +127,12 @@ public class SPINInferences {
 			SPINExplanations explanations,
 			List<SPINStatistics> statistics,
 			boolean singlePass, 
-			ProgressMonitor monitor) {
+			ProgressMonitor monitor, SPINModuleRegistry registry) {
 		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, rulePredicate, true, initialTemplateBindings, false);
-		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false);
+		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, rulePredicate, true, initialTemplateBindings, false, registry);
+		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, registry);
 		SPINRuleComparator comparator = new DefaultSPINRuleComparator(queryModel);
-		return run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, explanations, statistics, singlePass, rulePredicate, comparator, monitor);
+		return run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, explanations, statistics, singlePass, rulePredicate, comparator, monitor, registry);
 	}
 
 	
@@ -150,6 +153,7 @@ public class SPINInferences {
 	 * @param rulePredicate  the predicate used (e.g. spin:rule)
 	 * @param comparator  optional comparator to determine the order of rule execution
 	 * @param monitor  an optional ProgressMonitor
+	 * @param registry TODO
 	 * @return the number of iterations (1 with singlePass)
 	 */
 	public static int run(
@@ -163,7 +167,7 @@ public class SPINInferences {
 			boolean singlePass,
 			Property rulePredicate,
 			SPINRuleComparator comparator,
-			ProgressMonitor monitor) {
+			ProgressMonitor monitor, SPINModuleRegistry registry) {
 		
 		// Get sorted list of Rules and remember where they came from
 		List<CommandWrapper> rulesList = new ArrayList<CommandWrapper>();
@@ -239,7 +243,7 @@ public class SPINInferences {
 			
 			if(!newRules.isEmpty() && !singlePass) {
 				for(Statement s : newRules) {
-					SPINQueryFinder.add(class2Query, queryModel.asStatement(s.asTriple()), queryModel, true, templateBindings, false);
+					SPINQueryFinder.add(class2Query, queryModel.asStatement(s.asTriple()), queryModel, true, templateBindings, false, registry);
 				}
 			}
 		}
