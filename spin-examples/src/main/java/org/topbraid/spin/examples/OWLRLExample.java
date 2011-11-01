@@ -25,7 +25,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.ReificationStyle;
-import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 
 
 /**
@@ -57,7 +56,7 @@ public class OWLRLExample {
 		OntModel owlrlModel = loadModelWithImports("http://topbraid.org/spin/owlrl-all");
 
 		// Register any new functions defined in OWL RL
-		SPINModuleRegistry.get().registerAll(owlrlModel, null, SPINModuleRegistry.get(), FunctionRegistry.get());
+		SPINModuleRegistry.get().registerAll(owlrlModel, null);
 		
 		// Build one big union Model of everything
 		MultiUnion multiUnion = new MultiUnion(new Graph[] {

@@ -62,7 +62,7 @@ public class CheckConstraints {
 		OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
 
 		// Register locally defined functions
-		SPINModuleRegistry.get().registerAll(ontModel, null, SPINModuleRegistry.get(), FunctionRegistry.get());
+		SPINModuleRegistry.get().registerAll(ontModel, null);
 
 		// Perform constraint checking
 		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null, SPINModuleRegistry.get(), FunctionRegistry.get());

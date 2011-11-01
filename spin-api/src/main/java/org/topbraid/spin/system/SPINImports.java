@@ -122,7 +122,7 @@ public class SPINImports {
 			
 			Model unionModel = ModelFactory.createModelForGraph(union);
 			if(needsRegistration) {
-				registry.registerAll(unionModel, null, registry, functionRegistry);
+				registry.registerAll(unionModel, null);
 			}
 			return unionModel;
 		}
