@@ -56,7 +56,7 @@ public class OWLRLExample {
 		OntModel owlrlModel = loadModelWithImports("http://topbraid.org/spin/owlrl-all");
 
 		// Register any new functions defined in OWL RL
-		SPINModuleRegistry.get().registerAll(owlrlModel, null);
+		SPINModuleRegistry.get().registerAll(owlrlModel, "http://topbraid.org/spin/owlrl-all");
 		
 		// Build one big union Model of everything
 		MultiUnion multiUnion = new MultiUnion(new Graph[] {
