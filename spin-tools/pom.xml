@@ -5,7 +5,7 @@
   <parent>
     <artifactId>spin-parent</artifactId>
     <groupId>org.topquadrant</groupId>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
   </parent>
   <artifactId>spin-tools</artifactId>
   <name>spin-tools</name>
@@ -17,7 +17,7 @@
   	<dependency>
   		<groupId>org.topquadrant</groupId>
   		<artifactId>spin-api</artifactId>
-  		<version>1.2.0</version>
+  		<version>1.2.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>
   <build>
