@@ -217,7 +217,7 @@ public class SPINModuleRegistry {
 	public void register(Function function, Object source, boolean addARQFunction) {
 		functions.put(function.getURI(), function);
 		if(source != null) {
-		    if(!sources.containsKey(function))
+		    if(!sources.containsKey(function.asNode()))
 		    {
 		        Set<Object> newSet = new HashSet<Object>();
 		        newSet.add(source);
