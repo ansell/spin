@@ -7,6 +7,8 @@ package org.topbraid.spin.model.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.model.Argument;
 import org.topbraid.spin.model.Module;
 import org.topbraid.spin.model.Template;
@@ -25,7 +27,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 
-	public TemplateCallImpl(Node node, EnhGraph graph) {
+    private static final Logger log = LoggerFactory.getLogger(TemplateCallImpl.class);
+
+    public TemplateCallImpl(Node node, EnhGraph graph) {
 		super(node, graph);
 	}
 
@@ -92,6 +96,7 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 	
 	@Override
 	public Module getModule() {
+        log.warn("using singleton based getModule method");
 		return getModule(SPINModuleRegistry.get());
 	}
 
@@ -102,6 +107,7 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 
     @Override
 	public String getQueryString() {
+        log.warn("using singleton based getQueryString method");
         return getQueryString(SPINModuleRegistry.get());
     }
     
@@ -117,6 +123,7 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 
 	@Override
 	public Template getTemplate() {
+        log.warn("using singleton based getTemplate method");
         return getTemplate(SPINModuleRegistry.get());
 	}
 	

@@ -6,6 +6,8 @@ package org.topbraid.spin.model;
 
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.Aggregations;
 import org.topbraid.spin.model.impl.TriplePatternImpl;
 import org.topbraid.spin.model.update.Clear;
@@ -45,7 +47,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
 @SuppressWarnings("deprecation")
 public class SPINFactory {
 	
-	/**
+    private static final Logger log = LoggerFactory.getLogger(SPINFactory.class);
+
+    /**
 	 * Attempts to cast a given Resource into an Aggregation.
 	 * Resources that have an aggregation type as their rdf:type
 	 * are recognized as well-formed aggregations.
@@ -244,6 +248,7 @@ public class SPINFactory {
 	 * @return an instance of TemplateCall or null
 	 */
 	public static TemplateCall asTemplateCall(RDFNode node) {
+        log.warn("using singleton based asTemplateCall method");
 	    return asTemplateCall(node, SPINModuleRegistry.get());
 	}
 	

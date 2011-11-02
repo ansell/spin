@@ -1,5 +1,7 @@
 package org.topbraid.spin.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.Aggregation;
@@ -38,6 +40,7 @@ public class SPINExpressions {
 	
 	public final static PrefixMapping emptyPrefixMapping = new PrefixMappingImpl();
 	
+    private static final Logger log = LoggerFactory.getLogger(SPINExpressions.class);
 	
 	public static String checkExpression(String str, Model model) {
 		String queryString = "ASK WHERE { LET (?xqoe := (" + str + ")) }";
@@ -122,6 +125,7 @@ public class SPINExpressions {
 	 * @return true if node is an expression
 	 */
 	public static boolean isExpression(RDFNode node) {
+        log.warn("using singleton based isExpression method");
 	    return isExpression(node, SPINModuleRegistry.get(), FunctionRegistry.get());
 	}
 	

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.ElementList;
 import org.topbraid.spin.model.SPINFactory;
@@ -43,6 +45,7 @@ public abstract class AbstractSPINResourceImpl extends org.topbraid.spin.model.S
 	 * One level of indentation (four spaces), used by toString methods
 	 */
 	public static final String INDENTATION = "    ";
+    private static final Logger log = LoggerFactory.getLogger(AbstractSPINResourceImpl.class);
 
 	
 	public AbstractSPINResourceImpl(Node node, EnhGraph graph) {
@@ -183,6 +186,7 @@ public abstract class AbstractSPINResourceImpl extends org.topbraid.spin.model.S
 	 */
 	@Override
 	public String toString() {
+	    log.warn("using singleton based toString method");
 	    return toString(SPINModuleRegistry.get());
 	}
 	

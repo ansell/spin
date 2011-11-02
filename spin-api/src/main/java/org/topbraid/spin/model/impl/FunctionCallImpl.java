@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.model.Function;
 import org.topbraid.spin.model.FunctionCall;
 import org.topbraid.spin.model.Module;
@@ -36,7 +38,9 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	
-	private final static String SP_ARG = SP.arg.getURI();
+    private static final Logger log = LoggerFactory.getLogger(FunctionCallImpl.class);
+
+    private final static String SP_ARG = SP.arg.getURI();
 	
 	
 	public FunctionCallImpl(Node node, EnhGraph graph) {
@@ -102,6 +106,7 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	
     @Override
 	public Resource getFunction() {
+        log.warn("using singleton based getFunction method");
         return getFunction(SPINModuleRegistry.get());
     }
     
@@ -148,6 +153,7 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	
 	@Override
 	public Module getModule() {
+        log.warn("using singleton based getModule method");
 	    return getModule(SPINModuleRegistry.get());
 	}
 	

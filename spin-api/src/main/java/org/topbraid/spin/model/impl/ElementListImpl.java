@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.ElementList;
 import org.topbraid.spin.model.SPINFactory;
@@ -29,7 +31,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ElementListImpl extends RDFListImpl implements ElementList {
 
-	public ElementListImpl(Node node, EnhGraph graph) {
+    private static final Logger log = LoggerFactory.getLogger(ElementListImpl.class);
+
+    public ElementListImpl(Node node, EnhGraph graph) {
 		super(node, graph);
 	}
 	
@@ -207,6 +211,7 @@ public class ElementListImpl extends RDFListImpl implements ElementList {
 	 */
 	@Override
 	public String toString() {
+        log.warn("using singleton based toString method");
 	    return toString(SPINModuleRegistry.get());
 	}
 	

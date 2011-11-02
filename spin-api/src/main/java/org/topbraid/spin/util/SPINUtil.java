@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.internal.ContainsVarChecker;
 import org.topbraid.spin.model.CommandWithWhere;
@@ -49,7 +51,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 public class SPINUtil {
 	
-	/**
+    private static final Logger log = LoggerFactory.getLogger(SPINUtil.class);
+
+    /**
 	 * The name of the variable that will be used in type binding
 	 * triple patterns (?this rdf:type ?TYPE_CLASS)
 	 */
@@ -63,6 +67,7 @@ public class SPINUtil {
 	 * @param results  the List to add the results to
 	 */
 	public static void addQueryOrTemplateCalls(Resource cls, Property predicate, List<QueryOrTemplateCall> results) {
+        log.warn("using singleton based addQueryOrTemplateCalls method");
 	    addQueryOrTemplateCalls(cls, predicate, results, SPINModuleRegistry.get());
 	}
 	    
@@ -151,6 +156,7 @@ public class SPINUtil {
 	 * @return true  if query mentions ?this
 	 */
 	public static boolean containsThis(CommandWithWhere command) {
+        log.warn("using singleton based containsThis method");
 	    return containsThis(command, SPINModuleRegistry.get());
 	}
 	
@@ -170,6 +176,7 @@ public class SPINUtil {
 	 * @throws IllegalArgumentException  if the node is not a valid SPIN Query or a String
 	 */
 	public static String getQueryString(RDFNode node, boolean usePrefixes) {
+        log.warn("using singleton based getQueryString method");
 	    return getQueryString(node, usePrefixes, SPINModuleRegistry.get());
 	}
 	
@@ -214,6 +221,7 @@ public class SPINUtil {
 	 * @return a Set of query strings
 	 */
 	public static Collection<String> getQueryStrings(Resource subject, Property property) {
+        log.warn("using singleton based getQueryStrings method");
 		Map<Statement,String> map = getQueryStringMap(subject, property, SPINModuleRegistry.get());
 		return map.values();
 	}

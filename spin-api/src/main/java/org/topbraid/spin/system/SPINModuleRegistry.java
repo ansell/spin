@@ -11,10 +11,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.openjena.atlas.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.arq.EvalFunction;
 import org.topbraid.spin.arq.SPINARQPFunction;
 import org.topbraid.spin.arq.SPINFunctionDrivers;
 import org.topbraid.spin.arq.SPINFunctionFactory;
+import org.topbraid.spin.arq.SPINThreadFunctionRegistry;
 import org.topbraid.spin.model.Function;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Template;
@@ -44,7 +48,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 public class SPINModuleRegistry {
 	
-	/**
+    private static final Logger log = LoggerFactory.getLogger(SPINModuleRegistry.class);
+            
+    /**
 	 * Remembers all function definitions (in their original Model) so that they
 	 * can be retrieved later.
 	 */
@@ -68,6 +74,7 @@ public class SPINModuleRegistry {
 	
 	public SPINModuleRegistry(FunctionRegistry functionRegistry)
 	{
+        log.warn("Creating new SPINModuleRegistry using functionRegistry="+functionRegistry);
 	    this.functionRegistry = functionRegistry;
 	}
     
@@ -77,6 +84,7 @@ public class SPINModuleRegistry {
 	 * @return the singleton
 	 */
 	public static SPINModuleRegistry get() {
+	    log.warn("Accessing SpinModuleRegistry singleton");
 		return singleton;
 	}
 	

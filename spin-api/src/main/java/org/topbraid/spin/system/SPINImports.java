@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.topbraid.spin.arq.SPINThreadFunctionRegistry;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.vocabulary.SP;
 import org.topbraid.spin.vocabulary.SPIN;
@@ -39,7 +42,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 public class SPINImports {
 	
-	private Set<String> registeredURIs = new HashSet<String>();
+    private static final Logger log = LoggerFactory.getLogger(SPINImports.class);
+
+    private Set<String> registeredURIs = new HashSet<String>();
 
 	public static SPINImports singleton = new SPINImports();
 	
@@ -81,7 +86,8 @@ public class SPINImports {
 	 * @return either model or the union of model and its spin:imports
 	 */
 	public Model getImportsModel(Model model) throws IOException {
-	    return getImportsModel(model, SPINModuleRegistry.get(), FunctionRegistry.get());
+        log.warn("using singleton based getImportsModel method");
+	    return getImportsModel(model, SPINModuleRegistry.get(), SPINThreadFunctionRegistry.get());
 	}
 	
     public Model getImportsModel(Model model, SPINModuleRegistry registry, FunctionRegistry functionRegistry) throws IOException {

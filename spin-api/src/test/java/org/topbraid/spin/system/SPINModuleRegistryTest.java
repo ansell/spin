@@ -59,7 +59,8 @@ public class SPINModuleRegistryTest
     public void setUp() throws Exception
     {
         // Create a new test registry together with a new standard function registry from ARQ
-        this.testRegistry = new SPINModuleRegistry(FunctionRegistry.standardRegistry());
+        //this.testRegistry = new SPINModuleRegistry(FunctionRegistry.standardRegistry());
+        this.testRegistry = new SPINModuleRegistry(FunctionRegistry.get());
         
         this.testRegistry.init();
         
@@ -100,7 +101,7 @@ public class SPINModuleRegistryTest
         SPINModuleRegistry.get().reset();
         
         // Set and set the singleton registry after each test to restrict sideeffects of tests
-        SPINModuleRegistry.set(new SPINModuleRegistry(FunctionRegistry.standardRegistry()));
+        SPINModuleRegistry.set(new SPINModuleRegistry(FunctionRegistry.get()));
         SPINModuleRegistry.get().init();
     }
     
