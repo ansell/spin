@@ -6,14 +6,15 @@ package org.topbraid.spin.system;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.topbraid.spin.model.Function;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -134,7 +135,7 @@ public class SPINModuleRegistryTest
     {
         this.testRegistry.reset();
         
-        Collection<Node> functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles1);
+        Collection<Function> functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles1);
         
         Assert.assertNotNull(functionsBySource);
         
@@ -170,7 +171,7 @@ public class SPINModuleRegistryTest
         
         this.testRegistry.reset();
         
-        Collection<Node> functionsBySource = this.testRegistry.getFunctionsBySource(dummyObject);
+        Collection<Function> functionsBySource = this.testRegistry.getFunctionsBySource(dummyObject);
         
         Assert.assertNotNull(functionsBySource);
         
@@ -207,7 +208,7 @@ public class SPINModuleRegistryTest
     {
         this.testRegistry.reset();
         
-        Collection<Node> functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles1);
+        Collection<Function> functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles1);
         
         Assert.assertNotNull(functionsBySource);
         
@@ -277,11 +278,27 @@ public class SPINModuleRegistryTest
      * {@link org.topbraid.spin.system.SPINModuleRegistry#getSource(org.topbraid.spin.model.Function)}
      * .
      */
-    @Ignore
     @Test
     public void testGetSource()
     {
-        Assert.fail("Not yet implemented");
+        // start with one source and verify that it returns results
+        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        
+        Collection<Function> functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles2);
+        
+        Assert.assertNotNull(functionsBySource);
+        
+        Assert.assertTrue(functionsBySource.size() > 0);
+        
+        for(Function nextFunction : functionsBySource)
+        {
+            Set<Object> source = this.testRegistry.getSource(nextFunction);
+            
+            Assert.assertNotNull(source);
+            
+            Assert.assertEquals(1, source.size());
+            Assert.assertTrue(source.contains(testFiles2));
+        }
     }
     
     /**

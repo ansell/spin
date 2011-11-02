@@ -23,7 +23,6 @@ import org.topbraid.spin.vocabulary.SPIN;
 import org.topbraid.spin.vocabulary.SPL;
 
 import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -54,7 +53,7 @@ public class SPINModuleRegistry {
 	/**
 	 * Remembers the source objects (e.g. file) that a Function has been loaded from.
 	 */
-	private Map<Node,Set<Object>> sources = new HashMap<Node,Set<Object>>();
+	private Map<Function, Set<Object>> sources = new HashMap<Function, Set<Object>>();
 	
 	/**
 	 * Remembers all template definitions (in their original Model) so that they
@@ -138,14 +137,14 @@ public class SPINModuleRegistry {
 	}
 
 	
-	public Object getSource(Function function) {
-		return sources.get(function.asNode());
+	public Set<Object> getSource(Function function) {
+		return sources.get(function);
 	}
 	
-    public Collection<Node> getFunctionsBySource(Object source) {
-        Collection<Node> results = new ArrayList<Node>();
+    public Collection<Function> getFunctionsBySource(Object source) {
+        Collection<Function> results = new ArrayList<Function>();
         
-        for(Node nextFunction : sources.keySet())
+        for(Function nextFunction : sources.keySet())
         {
             if(sources.get(nextFunction).contains(source))
             {
@@ -217,15 +216,15 @@ public class SPINModuleRegistry {
 	public void register(Function function, Object source, boolean addARQFunction) {
 		functions.put(function.getURI(), function);
 		if(source != null) {
-		    if(!sources.containsKey(function.asNode()))
+		    if(!sources.containsKey(function))
 		    {
 		        Set<Object> newSet = new HashSet<Object>();
 		        newSet.add(source);
-		        sources.put(function.asNode(), newSet);
+		        sources.put(function, newSet);
 		    }
 		    else
 		    {
-		        sources.get(function.asNode()).add(source);
+		        sources.get(function).add(source);
 		    }
 		}
 		ExtraPrefixes.add(function);
