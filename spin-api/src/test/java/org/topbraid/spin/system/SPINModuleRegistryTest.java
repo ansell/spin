@@ -281,8 +281,28 @@ public class SPINModuleRegistryTest
     @Test
     public void testGetSource()
     {
+        this.testRegistry.reset();
+        
+        int initialSize = this.testRegistry.getFunctions().size();
+
+        Assert.assertEquals(0, initialSize);
+        
         // start with one source and verify that it returns results
         this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        
+        int firstAddedSize = this.testRegistry.getFunctions().size();
+        
+        Assert.assertTrue(firstAddedSize > 0);
+
+        // pretend to register the functions from the same file using a different source object
+        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles3);
+        
+        int afterSecondSourceAddedSize = this.testRegistry.getFunctions().size();
+
+        Assert.assertTrue(afterSecondSourceAddedSize > 0);
+        
+        // make sure that the same registerAll with the second source object did not affect the number of registered functions in the system
+        Assert.assertEquals(firstAddedSize, afterSecondSourceAddedSize);
         
         Collection<Function> functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles2);
         
@@ -296,9 +316,40 @@ public class SPINModuleRegistryTest
             
             Assert.assertNotNull(source);
             
-            Assert.assertEquals(1, source.size());
+            Assert.assertEquals(2, source.size());
+            
             Assert.assertTrue(source.contains(testFiles2));
+            
+            // Check that they were also registered under the testFiles3 source object
+            Assert.assertTrue(source.contains(testFiles3));
+            
         }
+
+        // Do the same procedure for getFunctions to make sure that getFunctionsForSource isn't unique with respect to getSource
+        Collection<Function> allFunctions = this.testRegistry.getFunctions();
+        
+        Assert.assertNotNull(allFunctions);
+        
+        Assert.assertTrue(allFunctions.size() > 0);
+        
+        // check that the size of the two function collections is equal
+        Assert.assertEquals(allFunctions.size(), functionsBySource.size());
+        
+        for(Function nextFunction : allFunctions)
+        {
+            Set<Object> source = this.testRegistry.getSource(nextFunction);
+            
+            Assert.assertNotNull(source);
+            
+            Assert.assertEquals(2, source.size());
+            
+            Assert.assertTrue(source.contains(testFiles2));
+            
+            // Check that they were also registered under the testFiles3 source object
+            Assert.assertTrue(source.contains(testFiles3));
+            
+        }
+    
     }
     
     /**
