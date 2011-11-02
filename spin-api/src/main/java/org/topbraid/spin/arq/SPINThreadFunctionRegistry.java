@@ -99,9 +99,13 @@ public class SPINThreadFunctionRegistry extends FunctionRegistry {
 	private FunctionRegistry base;
     private SPINModuleRegistry spinModuleRegistry;
 	
-	public SPINThreadFunctionRegistry(FunctionRegistry base, SPINModuleRegistry nextSpinModuleRegistry) {
-		this.base = base;
-		this.spinModuleRegistry = nextSpinModuleRegistry;
+    public SPINThreadFunctionRegistry(FunctionRegistry base) {
+        this.base = base;
+    }
+
+    public SPINThreadFunctionRegistry(FunctionRegistry base, SPINModuleRegistry nextSpinModuleRegistry) {
+		this(base);
+		this.setSpinModuleRegistry(nextSpinModuleRegistry);
 	}
 
 
@@ -113,7 +117,7 @@ public class SPINThreadFunctionRegistry extends FunctionRegistry {
 		}
 		SPINThreadFunctions functions = map.get(Thread.currentThread());
 		if(functions != null) {
-			FunctionFactory ff = functions.getFunctionFactory(uri, this.spinModuleRegistry);
+			FunctionFactory ff = functions.getFunctionFactory(uri, this.getSpinModuleRegistry());
 			if(ff != null) {
 				return ff;
 			}
@@ -156,4 +160,16 @@ public class SPINThreadFunctionRegistry extends FunctionRegistry {
 	public FunctionFactory remove(String uri) {
 		return base.remove(uri);
 	}
+
+
+    public SPINModuleRegistry getSpinModuleRegistry()
+    {
+        return spinModuleRegistry;
+    }
+
+
+    public void setSpinModuleRegistry(SPINModuleRegistry spinModuleRegistry)
+    {
+        this.spinModuleRegistry = spinModuleRegistry;
+    }
 }
