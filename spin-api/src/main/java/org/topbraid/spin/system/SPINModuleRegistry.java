@@ -4,6 +4,7 @@
  *******************************************************************************/
 package org.topbraid.spin.system;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +23,6 @@ import org.topbraid.spin.vocabulary.SPIN;
 import org.topbraid.spin.vocabulary.SPL;
 
 import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -51,9 +51,9 @@ public class SPINModuleRegistry {
 	private Map<String, Function> functions = new HashMap<String, Function>();
 	
 	/**
-	 * Remembers the source object (e.g. file) that a Function has been loaded from.
+	 * Remembers the source objects (e.g. files) that a Function has been loaded from.
 	 */
-	private Map<Node,Object> sources = new HashMap<Node,Object>();
+	private Map<Function, Set<Object>> sources = new HashMap<Function, Set<Object>>();
 	
 	/**
 	 * Remembers all template definitions (in their original Model) so that they
@@ -130,10 +130,25 @@ public class SPINModuleRegistry {
 	}
 
 	
-	public Object getSource(Function function) {
-		return sources.get(function.asNode());
+	public Set<Object> getSources(Function function) {
+		return sources.get(function);
 	}
 	
+    
+    public Collection<Function> getFunctionsBySource(Object nextSource) {
+        Collection<Function> results = new ArrayList<Function>();
+        
+        for(Function nextFunction : sources.keySet())
+        {
+            if(sources.get(nextFunction).contains(nextSource))
+            {
+                results.add(nextFunction);
+            }
+        }
+        
+        return results;
+    }
+    
 	
 	/**
 	 * Gets a Template with a given URI in its defining Model.
@@ -196,7 +211,16 @@ public class SPINModuleRegistry {
 	public void register(Function function, Object source, boolean addARQFunction) {
 		functions.put(function.getURI(), function);
 		if(source != null) {
-			sources.put(function.asNode(), source);
+		    if(sources.containsKey(function))
+		    {
+		        sources.get(function).add(source);
+		    }
+		    else
+		    {
+		        Set<Object> newSet = new HashSet<Object>();
+		        newSet.add(source);
+		        sources.put(function, newSet);
+		    }
 		}
 		ExtraPrefixes.add(function);
 		if(addARQFunction) {
