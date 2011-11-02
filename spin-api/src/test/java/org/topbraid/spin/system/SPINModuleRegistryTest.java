@@ -119,11 +119,20 @@ public class SPINModuleRegistryTest
     /**
      * Test method for {@link org.topbraid.spin.system.SPINModuleRegistry#getFunctions()}.
      */
-    @Ignore
     @Test
     public void testGetFunctions()
     {
-        Assert.fail("Not yet implemented");
+        this.testRegistry.reset();
+        
+        Assert.assertEquals(0, this.testRegistry.getFunctions().size());
+        
+        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        
+        Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
+
+        this.testRegistry.reset();
+        
+        Assert.assertEquals(0, this.testRegistry.getFunctions().size());
     }
     
     /**
