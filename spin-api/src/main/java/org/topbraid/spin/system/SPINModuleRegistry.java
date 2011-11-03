@@ -6,6 +6,7 @@ package org.topbraid.spin.system;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,10 +23,7 @@ import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.vocabulary.SPIN;
 import org.topbraid.spin.vocabulary.SPL;
 
-import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.function.FunctionFactory;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
@@ -91,7 +89,7 @@ public class SPINModuleRegistry {
 	 * @return the Function or null if none was found
 	 */
 	public Function getFunction(String uri, Model model) {
-	    return getFunction(uri, model, null);
+	    return getFunction(uri, model, Collections.emptySet());
 	}
 	
     /**
@@ -99,14 +97,15 @@ public class SPINModuleRegistry {
      * @param uri  the URI of the Function to get
      * @param model  an (optional) Model that should also be used to look up
      *               locally defined functions if they are not found in the registry
-     * @param validSources A set of objects corresponding to sources given to SPINModuleRegistry.registerAll, or null to include all available sources
+     * @param validSources A set of objects corresponding to sources given to SPINModuleRegistry.registerAll, or null or an empty Set to include all available sources
      * @return the Function or null if none was found
      */
     public Function getFunction(String uri, Model model, Set<Object> validSources) {
 	    Function function = functions.get(uri);
 		if(function != null) 
 		{
-		    if(validSources == null)
+		    // include all functions if validSources was null or an empty Set
+		    if(validSources == null || validSources.size() == 0)
 		        return function;
 		    else
 		    {

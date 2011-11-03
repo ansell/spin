@@ -96,7 +96,7 @@ public class SPINInferences {
 			List<SPINStatistics> statistics,
 			boolean singlePass, 
 			ProgressMonitor monitor) {
-		return run(queryModel, SPIN.rule, newTriples, explanations, statistics, singlePass, monitor);
+		return run(queryModel, SPIN.rule, newTriples, explanations, statistics, singlePass, monitor, Collections.emptySet());
 	}
 	
 	
@@ -125,11 +125,41 @@ public class SPINInferences {
 			List<SPINStatistics> statistics,
 			boolean singlePass, 
 			ProgressMonitor monitor) {
+	    
+	    return run(queryModel, rulePredicate, newTriples, explanations, statistics, singlePass, monitor, Collections.emptySet());
+	}
+	
+    /**
+     * Iterates over all SPIN rules in a (query) Model and adds all constructed
+     * triples to a given Model (newTriples) until no further changes have been
+     * made within one iteration.
+     * Note that in order to iterate more than single pass, the newTriples Model
+     * must be a sub-model of the queryModel (which likely has to be an OntModel).
+     * The supplied rulePredicate is usually spin:rule, but can also be a sub-
+     * property of spin:rule to exercise finer control over which rules to fire.
+     * @param queryModel  the Model to query
+     * @param rulePredicate  the rule predicate (spin:rule or a sub-property thereof)
+     * @param newTriples  the Model to add the new triples to 
+     * @param explanations  an optional object to write explanations to
+     * @param statistics  optional list to add statistics about which queries were slow
+     * @param singlePass  true to just do a single pass (don't iterate)
+     * @param monitor  an optional ProgressMonitor
+     * @return the number of iterations (1 with singlePass)
+     */
+    public static int run(
+            Model queryModel,
+            Property rulePredicate,
+            Model newTriples,
+            SPINExplanations explanations,
+            List<SPINStatistics> statistics,
+            boolean singlePass, 
+            ProgressMonitor monitor,
+            Set<Object> validFunctionSources) {
 		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, rulePredicate, true, initialTemplateBindings, false);
-		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false);
+		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, rulePredicate, true, initialTemplateBindings, false, validFunctionSources);
+		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, validFunctionSources);
 		SPINRuleComparator comparator = new DefaultSPINRuleComparator(queryModel);
-		return run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, explanations, statistics, singlePass, rulePredicate, comparator, monitor);
+		return run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, explanations, statistics, singlePass, rulePredicate, comparator, monitor, validFunctionSources);
 	}
 
 	
@@ -165,6 +195,41 @@ public class SPINInferences {
 			SPINRuleComparator comparator,
 			ProgressMonitor monitor) {
 		
+	    return run(queryModel, newTriples, class2Query, class2Constructor, templateBindings, explanations, statistics, singlePass, rulePredicate, comparator, monitor, Collections.emptySet());
+	}
+	
+    /**
+     * Iterates over a provided collection of SPIN rules and adds all constructed
+     * triples to a given Model (newTriples) until no further changes have been
+     * made within one iteration.
+     * Note that in order to iterate more than single pass, the newTriples Model
+     * must be a sub-model of the queryModel (which likely has to be an OntModel).
+     * @param queryModel  the Model to query
+     * @param newTriples  the Model to add the new triples to 
+     * @param class2Query  the map of queries to run (see SPINQueryFinder)
+     * @param class2Constructor  the map of constructors to run
+     * @param templateBindings  initial template bindings (see SPINQueryFinder)
+     * @param explanations  an optional object to write explanations to
+     * @param statistics  optional list to add statistics about which queries were slow
+     * @param singlePass  true to just do a single pass (don't iterate)
+     * @param rulePredicate  the predicate used (e.g. spin:rule)
+     * @param comparator  optional comparator to determine the order of rule execution
+     * @param monitor  an optional ProgressMonitor
+     * @return the number of iterations (1 with singlePass)
+     */
+    public static int run(
+            Model queryModel,
+            Model newTriples,
+            Map<Resource, List<CommandWrapper>> class2Query,
+            Map<Resource, List<CommandWrapper>> class2Constructor,
+            Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
+            SPINExplanations explanations,
+            List<SPINStatistics> statistics,
+            boolean singlePass,
+            Property rulePredicate,
+            SPINRuleComparator comparator,
+            ProgressMonitor monitor,
+            Set<Object> validFunctionSources) {
 		// Get sorted list of Rules and remember where they came from
 		List<CommandWrapper> rulesList = new ArrayList<CommandWrapper>();
 		Map<CommandWrapper,Resource> rule2Class = new HashMap<CommandWrapper,Resource>();
@@ -239,7 +304,7 @@ public class SPINInferences {
 			
 			if(!newRules.isEmpty() && !singlePass) {
 				for(Statement s : newRules) {
-					SPINQueryFinder.add(class2Query, queryModel.asStatement(s.asTriple()), queryModel, true, templateBindings, false);
+					SPINQueryFinder.add(class2Query, queryModel.asStatement(s.asTriple()), queryModel, true, templateBindings, false, validFunctionSources);
 				}
 			}
 		}

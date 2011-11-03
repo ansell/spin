@@ -5,6 +5,7 @@
 package org.topbraid.spin.model.visitor;
 
 import java.util.List;
+import java.util.Set;
 
 import org.topbraid.spin.model.Aggregation;
 import org.topbraid.spin.model.FunctionCall;
@@ -24,40 +25,38 @@ public class ExpressionWalker implements ExpressionVisitor {
 
 	private ExpressionVisitor visitor;
 	
-	
 	public ExpressionWalker(ExpressionVisitor visitor) {
 		this.visitor = visitor;
 	}
 
-	
-	public void visit(Aggregation aggregation) {
-		visitor.visit(aggregation);
+	public void visit(Aggregation aggregation, Set<Object> validFunctionSources) {
+		visitor.visit(aggregation, validFunctionSources);
 		Variable as = aggregation.getAs();
 		if(as != null) {
-			visitor.visit(as);
+			visitor.visit(as, validFunctionSources);
 		}
 		Resource expr = aggregation.getExpression();
 		if(expr != null) {
-			ExpressionVisitors.visit(expr, this);
+			ExpressionVisitors.visit(expr, this, validFunctionSources);
 		}
 	}
 
 
-	public void visit(FunctionCall functionCall) {
-		visitor.visit(functionCall);
+    public void visit(FunctionCall functionCall, Set<Object> validFunctionSources) {
+	    visitor.visit(functionCall, validFunctionSources);
 		List<RDFNode> args = functionCall.getArguments();
 		for(RDFNode arg : args) {
-			ExpressionVisitors.visit(arg, this);
+			ExpressionVisitors.visit(arg, this, validFunctionSources);
 		}
 	}
 
 	
-	public void visit(RDFNode node) {
-		visitor.visit(node);
+	public void visit(RDFNode node, Set<Object> validFunctionSources) {
+		visitor.visit(node, validFunctionSources);
 	}
 
 	
-	public void visit(Variable variable) {
-		visitor.visit(variable);
+	public void visit(Variable variable, Set<Object> validFunctionSources) {
+		visitor.visit(variable, validFunctionSources);
 	}
 }

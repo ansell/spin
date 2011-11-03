@@ -7,6 +7,7 @@ package org.topbraid.spin.util;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -147,7 +148,19 @@ public class SPINUtil {
 	 * @return true  if query mentions ?this
 	 */
 	public static boolean containsThis(CommandWithWhere command) {
-		return new ContainsVarChecker().contains(command, SPIN._this);
+	    return containsThis(command, Collections.emptySet());
+	}
+	
+    /**
+     * Checks whether a given query mentions the variable ?this anywhere.
+     * This can be used to check whether ?this needs to be bound before
+     * execution, etc.
+     * @param command  the query to test
+     * @param validFunctionSources a set of objects used as sources in SPINModuleRegistry.registerAll that are valid here, or null for all
+     * @return true  if query mentions ?this
+     */
+    public static boolean containsThis(CommandWithWhere command, Set<Object> validFunctionSources) {
+		return new ContainsVarChecker().contains(command, SPIN._this, validFunctionSources);
 	}
 	
 	

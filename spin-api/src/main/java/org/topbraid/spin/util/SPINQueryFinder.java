@@ -4,10 +4,13 @@
  *******************************************************************************/
 package org.topbraid.spin.util;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.Ask;
@@ -43,7 +46,16 @@ public class SPINQueryFinder {
 			boolean withClass,
 			Map<CommandWrapper, Map<String, RDFNode>> initialTemplateBindings,
 			boolean allowAsk) {
-		if(s.getObject().isResource()) {
+	    add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk, new HashSet<Object>());
+	}
+	
+    public static void add(Map<Resource, List<CommandWrapper>> class2Query, Statement s,
+            Model model,
+            boolean withClass,
+            Map<CommandWrapper, Map<String, RDFNode>> initialTemplateBindings,
+            boolean allowAsk, Set<Object> validFunctionSources) {
+	    
+	    if(s.getObject().isResource()) {
 			String spinQueryText = null;
 			String label = null;
 			org.topbraid.spin.model.Command spinCommand = null;
@@ -78,7 +90,7 @@ public class SPINQueryFinder {
 				}
 				if(!thisUnbound && withClass &&
 						(spinCommand instanceof Construct || spinCommand instanceof Update) 
-						&& SPINUtil.containsThis((CommandWithWhere)spinCommand)) {
+						&& SPINUtil.containsThis((CommandWithWhere)spinCommand, validFunctionSources)) {
 					queryString = SPINUtil.addThisTypeClause(queryString);
 				}
 				CommandWrapper wrapper = null;
@@ -128,11 +140,28 @@ public class SPINQueryFinder {
 	 * @return the result Map, possibly empty but not null
 	 */
 	public static Map<Resource, List<CommandWrapper>> getClass2QueryMap(Model model, Model queryModel, Property predicate, boolean withClass, Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings, boolean allowAsk) {
+	    return getClass2QueryMap(model, queryModel, predicate, withClass, initialTemplateBindings, allowAsk, Collections.emptySet());
+	}
+	
+    /**
+     * Gets a Map of QueryWrappers with their associated classes. 
+     * @param model  the Model to operate on
+     * @param queryModel  the Model to query on (might be different)
+     * @param predicate  the predicate such as <code>spin:rule</code>
+     * @param withClass  true to also include a SPARQL clause to bind ?this
+     *                   (something along the lines of ?this a ?THIS_CLASS) 
+     * @param initialTemplateBindings  will contain the initial bindings if
+     *                                 QueryWrappers wrap SPIN template calls
+     * @param allowAsk  also return ASK queries
+     * @param validFunctionSources a set of objects used in SPINModuleRegistry.registerAll that are valid in this case
+     * @return the result Map, possibly empty but not null
+     */
+    public static Map<Resource, List<CommandWrapper>> getClass2QueryMap(Model model, Model queryModel, Property predicate, boolean withClass, Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings, boolean allowAsk, Set<Object> validFunctionSources) {
 		predicate = model.getProperty(predicate.getURI());
 		Map<Resource,List<CommandWrapper>> class2Query = new HashMap<Resource,List<CommandWrapper>>();
 		List<Statement> ss = JenaUtil.getStatementsList(JenaUtil.listAllProperties(null, predicate));
 		for(Statement s : ss) {
-			add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk);
+			add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk, validFunctionSources);
 		}
 		return class2Query;
 	}

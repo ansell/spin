@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.topbraid.spin.constraints.ConstraintViolation;
 import org.topbraid.spin.constraints.SPINConstraints;
@@ -65,8 +67,12 @@ public class CheckConstraints {
 		// Register locally defined functions
 		SPINModuleRegistry.get().registerAll(ontModel, baseURI);
 
+		Set<Object> validFunctionSources = new HashSet<Object>();
+		
+		validFunctionSources.add(baseURI);
+		
 		// Perform constraint checking
-		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, baseURI);
+		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, baseURI, validFunctionSources);
 		
 		// Create results model
 		Model results = ModelFactory.createDefaultModel();

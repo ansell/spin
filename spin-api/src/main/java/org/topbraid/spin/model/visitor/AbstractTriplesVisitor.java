@@ -53,7 +53,7 @@ public abstract class AbstractTriplesVisitor {
     
 	
 	public void run() {
-		ElementWalker walker = new ElementWalker(new MyElementVisitor(), new MyExpressionVisitor());
+		ElementWalker walker = new ElementWalker(new MyElementVisitor(), new MyExpressionVisitor(), this.validSources);
 		element.visit(walker);
 	}
 	
@@ -81,11 +81,11 @@ public abstract class AbstractTriplesVisitor {
 		private Set<FunctionCall> reachedFunctionCalls = new HashSet<FunctionCall>();
 
 		@Override
-		public void visit(FunctionCall functionCall) {
+		public void visit(FunctionCall functionCall, Set<Object> validFunctionSources) {
 			Resource function = functionCall.getFunction();
 			if(function != null && function.isURIResource() && !reachedFunctionCalls.contains(functionCall)) {
 				reachedFunctionCalls.add(functionCall);
-				Resource f = SPINModuleRegistry.get().getFunction(function.getURI(), null, validSources);
+				Resource f = SPINModuleRegistry.get().getFunction(function.getURI(), null, validFunctionSources);
 				if(f != null) {
 					Statement bodyS = f.getProperty(SPIN.body);
 					if(bodyS != null && bodyS.getObject().isResource()) {
@@ -100,7 +100,7 @@ public abstract class AbstractTriplesVisitor {
 						Query spinQuery = SPINFactory.asQuery(bodyS.getResource());
 						ElementList where = spinQuery.getWhere();
 						if(where != null) {
-							ElementWalker walker = new ElementWalker(new MyElementVisitor(), this);
+							ElementWalker walker = new ElementWalker(new MyElementVisitor(), this, validFunctionSources);
 							where.visit(walker);
 						}
 						

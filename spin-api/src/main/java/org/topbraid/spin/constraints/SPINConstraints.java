@@ -74,14 +74,14 @@ public class SPINConstraints {
 	private static List<TemplateCall> NO_FIXES = Collections.emptyList();
 	
 
-	private static void addConstraintViolations(List<ConstraintViolation> results, SPINInstance instance, Property predicate, boolean matchValue, List<SPINStatistics> stats) {
-		List<QueryOrTemplateCall> qots = instance.getQueriesAndTemplateCalls(predicate);
+    private static void addConstraintViolations(List<ConstraintViolation> results, SPINInstance instance, Property predicate, boolean matchValue, List<SPINStatistics> stats, Set<Object> validFunctionSources) {
+	    List<QueryOrTemplateCall> qots = instance.getQueriesAndTemplateCalls(predicate);
 		for(QueryOrTemplateCall qot : qots) {
 			if(qot.getTemplateCall() != null) {
-				addTemplateCallResults(results, qot, instance, matchValue);					
+				addTemplateCallResults(results, qot, instance, matchValue, validFunctionSources);					
 			}
 			else if(qot.getQuery() != null) {
-				addQueryResults(results, qot, instance, matchValue, stats);
+				addQueryResults(results, qot, instance, matchValue, stats, validFunctionSources);
 			}
 		}
 	}
@@ -157,12 +157,11 @@ public class SPINConstraints {
 	}
 
 
-	private static void addQueryResults(List<ConstraintViolation> results, QueryOrTemplateCall qot, Resource resource, boolean matchValue, List<SPINStatistics> stats) {
-		
+    private static void addQueryResults(List<ConstraintViolation> results, QueryOrTemplateCall qot, Resource resource, boolean matchValue, List<SPINStatistics> stats, Set<Object> validFunctionSources) {
 		QuerySolutionMap arqBindings = new QuerySolutionMap();
 		
 		String queryString = ARQFactory.get().createCommandString(qot.getQuery());
-		if(resource == null && SPINUtil.containsThis(qot.getQuery())) {
+		if(resource == null && SPINUtil.containsThis(qot.getQuery(), validFunctionSources)) {
 			queryString = SPINUtil.addThisTypeClause(queryString);
 		}
 		else {
@@ -187,7 +186,7 @@ public class SPINConstraints {
 					message = comment;
 				}
 				message += "\n(SPIN constraint at " + SPINLabels.get().getLabel(qot.getCls()) + ")";
-				List<SimplePropertyPath> paths = getPropertyPaths(resource, qot.getQuery().getWhere(), null);
+				List<SimplePropertyPath> paths = getPropertyPaths(resource, qot.getQuery().getWhere(), null, validFunctionSources);
 				Resource source = getSource(qot);
 				results.add(createConstraintViolation(paths, NO_FIXES, resource, message, source));
 			}
@@ -214,9 +213,9 @@ public class SPINConstraints {
 	}
 
 
-	private static void addTemplateCallResults(List<ConstraintViolation> results, QueryOrTemplateCall qot,
-			Resource resource, boolean matchValue) {
-		TemplateCall templateCall = qot.getTemplateCall();
+    private static void addTemplateCallResults(List<ConstraintViolation> results, QueryOrTemplateCall qot,
+            Resource resource, boolean matchValue, Set<Object> validFunctionSources) {
+	    TemplateCall templateCall = qot.getTemplateCall();
 		Template template = templateCall.getTemplate();
 		if(template != null && template.getBody() instanceof org.topbraid.spin.model.Query) {
 			org.topbraid.spin.model.Query spinQuery = (org.topbraid.spin.model.Query) template.getBody();
@@ -228,7 +227,7 @@ public class SPINConstraints {
 				
 				if(spinQuery instanceof Ask) {
 					if(qexec.execAsk() != matchValue) {
-						List<SimplePropertyPath> paths = getPropertyPaths(resource, spinQuery.getWhere(), templateCall.getArgumentsMapByProperties());
+						List<SimplePropertyPath> paths = getPropertyPaths(resource, spinQuery.getWhere(), templateCall.getArgumentsMapByProperties(), validFunctionSources);
 						String message = SPINLabels.get().getLabel(templateCall);
 						message += "\n(SPIN constraint at " + SPINLabels.get().getLabel(qot.getCls()) + ")";
 						results.add(createConstraintViolation(paths, NO_FIXES, resource, message, templateCall));
@@ -253,7 +252,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations (empty if all is OK)
 	 */
 	public static List<ConstraintViolation> check(Resource resource, ProgressMonitor monitor) {
-		return check(resource, new LinkedList<SPINStatistics>(), monitor, null);
+		return check(resource, new LinkedList<SPINStatistics>(), monitor, null, Collections.emptySet());
 	}
 	
 	
@@ -268,7 +267,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations (empty if all is OK)
 	 */
 	public static List<ConstraintViolation> check(Resource resource, List<SPINStatistics> stats, ProgressMonitor monitor) {
-	    return check(resource, stats, monitor, null);
+	    return check(resource, stats, monitor, null, Collections.emptySet());
 	}
 	
     /**
@@ -280,9 +279,10 @@ public class SPINConstraints {
      * @param stats  an (optional) List to add statistics to
      * @param monitor  an (optional) progress monitor (currently ignored)
      * @param source an object to use in the SPINModuleRegistry as the source of any functions that are discovered
+     * @param validFunctionSources 
      * @return a List of ConstraintViolations (empty if all is OK)
      */
-    public static List<ConstraintViolation> check(Resource resource, List<SPINStatistics> stats, ProgressMonitor monitor, Object source) {
+    public static List<ConstraintViolation> check(Resource resource, List<SPINStatistics> stats, ProgressMonitor monitor, Object source, Set<Object> validFunctionSources) {
 	    List<ConstraintViolation> results = new LinkedList<ConstraintViolation>();
 		
 		// If spin:imports exist, then continue with the union model
@@ -297,7 +297,7 @@ public class SPINConstraints {
 		}
 		
 		SPINInstance instance = resource.as(SPINInstance.class);
-		addConstraintViolations(results, instance, SPIN.constraint, false, stats);
+		addConstraintViolations(results, instance, SPIN.constraint, false, stats, validFunctionSources);
 		return results;
 	}
 	
@@ -312,7 +312,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations
 	 */
 	public static List<ConstraintViolation> check(Model model, ProgressMonitor monitor) {
-		return check(model, null, monitor, null);
+		return check(model, null, monitor, null, Collections.emptySet());
 	}
 	
 
@@ -327,7 +327,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations
 	 */
 	public static List<ConstraintViolation> check(Model model, List<SPINStatistics> stats, ProgressMonitor monitor) {
-	    return check(model, stats, monitor, null);
+	    return check(model, stats, monitor, null, Collections.emptySet());
 	}
 	
     /**
@@ -339,11 +339,12 @@ public class SPINConstraints {
      * @param stats  an (optional) List to write statistics reports to
      * @param monitor  an optional ProgressMonitor
      * @param source the source to use for any new functions that are found
+     * @param validFunctionSources TODO
      * @return a List of ConstraintViolations
      */
-    public static List<ConstraintViolation> check(Model model, List<SPINStatistics> stats, ProgressMonitor monitor, Object source) {
+    public static List<ConstraintViolation> check(Model model, List<SPINStatistics> stats, ProgressMonitor monitor, Object source, Set<Object> validFunctionSources) {
 		List<ConstraintViolation> results = new LinkedList<ConstraintViolation>();
-		run(model, results, stats, monitor, source);
+		run(model, results, stats, monitor, source, validFunctionSources);
 		return results;
 	}
 	
@@ -406,8 +407,9 @@ public class SPINConstraints {
 	}
 
 
-	private static List<SimplePropertyPath> getPropertyPaths(Resource resource, ElementList where, Map<Property,RDFNode> varBindings) {
-		PropertyPathsGetter getter = new PropertyPathsGetter(where, varBindings);
+    private static List<SimplePropertyPath> getPropertyPaths(Resource resource, ElementList where, Map<Property,RDFNode> varBindings, Set<Object> validFunctionSources) {
+	    
+	    PropertyPathsGetter getter = new PropertyPathsGetter(where, varBindings, validFunctionSources);
 		getter.run();
 		return new ArrayList<SimplePropertyPath>(getter.getResults()); 
 	}
@@ -465,11 +467,6 @@ public class SPINConstraints {
 		}
 	}
 
-	@Deprecated
-	private static void run(Model model, List<ConstraintViolation> results, List<SPINStatistics> stats, ProgressMonitor monitor) {
-	    run(model, results, stats, monitor, null);
-	}
-	
 	/**
 	 * 
 	 * @param model TODO
@@ -478,7 +475,7 @@ public class SPINConstraints {
 	 * @param monitor TODO
 	 * @param source The object to use as the source for any new functions that are discovered
 	 */
-    private static void run(Model model, List<ConstraintViolation> results, List<SPINStatistics> stats, ProgressMonitor monitor, Object source) {
+    private static void run(Model model, List<ConstraintViolation> results, List<SPINStatistics> stats, ProgressMonitor monitor, Object source, Set<Object> validFunctionSources) {
 	    Map<CommandWrapper,Map<String,RDFNode>> templateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
 		
 		// If spin:imports exist then continue with the union model
@@ -489,7 +486,7 @@ public class SPINConstraints {
 			// TODO: better error handling
 			ex.printStackTrace();
 		}
-		Map<Resource,List<CommandWrapper>> class2Query = SPINQueryFinder.getClass2QueryMap(model, model, SPIN.constraint, true, templateBindings, true);
+		Map<Resource,List<CommandWrapper>> class2Query = SPINQueryFinder.getClass2QueryMap(model, model, SPIN.constraint, true, templateBindings, true, validFunctionSources);
 		for(Resource cls : class2Query.keySet()) {
 			List<CommandWrapper> arqs = class2Query.get(cls);
 			for(CommandWrapper arqWrapper : arqs) {

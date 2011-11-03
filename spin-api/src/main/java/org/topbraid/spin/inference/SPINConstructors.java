@@ -6,6 +6,7 @@ package org.topbraid.spin.inference;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -64,8 +65,20 @@ public class SPINConstructors {
 	 * @param monitor  an optional progress monitor
 	 */
 	public static void construct(Model queryModel, List<Resource> instances, Model targetModel, ProgressMonitor monitor) {
-		Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false);
+	    construct(queryModel, instances, targetModel, monitor, Collections.emptySet());
+	}
+	
+    /**
+     * Runs the constructors on a List of Resources.
+     * @param queryModel  the model to query over
+     * @param instances  the instances to run the constructors of
+     * @param targetModel  the model that shall receive the new triples
+     * @param monitor  an optional progress monitor
+     * @param validFunctionSources a set of objects given in SPINModuleRegistry.registerAll that are valid in this case
+     */
+    public static void construct(Model queryModel, List<Resource> instances, Model targetModel, ProgressMonitor monitor, Set<Object> validFunctionSources) {
+	    Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
+		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, validFunctionSources);
 		construct(queryModel, instances, targetModel, new HashSet<Resource>(), class2Constructor, initialTemplateBindings, monitor);
 	}
 
@@ -327,6 +340,17 @@ public class SPINConstructors {
 	 * @param monitor  an optional progress monitor
 	 */
 	public static void constructAll(Model queryModel, Model targetModel, ProgressMonitor monitor) {
+	    
+	}
+	
+    /**
+     * Runs all constructors on all instances in a given model.
+     * @param queryModel  the query model
+     * @param targetModel  the model to write the new triples to
+     * @param monitor  an optional progress monitor
+     * @param validFunctionSources a set of objects defined using SPINModuleRegistry.registerAll that define valid sources for functions
+     */
+    public static void constructAll(Model queryModel, Model targetModel, ProgressMonitor monitor, Set<Object> validFunctionSources) {
 		Set<Resource> classes = getClassesWithConstructor(queryModel);
 		List<Resource> instances = new ArrayList<Resource>(getInstances(classes));
 		OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, queryModel);
@@ -334,7 +358,7 @@ public class SPINConstructors {
 			ontModel.addSubModel(targetModel);
 		}
 		Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false);
+		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, validFunctionSources);
 		construct(ontModel, instances, targetModel, new HashSet<Resource>(), class2Constructor, initialTemplateBindings, monitor);
 	}
 	

@@ -40,6 +40,10 @@ public class ObjectPropertiesGetter extends AbstractTriplesVisitor {
 		this.targetModel = targetModel;
 	}
 	
+    public ObjectPropertiesGetter(Model targetModel, Element element, Map<Property,RDFNode> initialBindings, Set<Object> validFunctionSources) {
+        super(element, initialBindings, validFunctionSources);
+        this.targetModel = targetModel;
+    }
 	
 	public Set<Property> getResults() {
 		return properties;

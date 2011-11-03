@@ -5,6 +5,7 @@
 package org.topbraid.spin.model.visitor;
 
 import java.util.List;
+import java.util.Set;
 
 import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.ElementGroup;
@@ -35,6 +36,8 @@ public class ElementWalker implements ElementVisitor {
 	private ElementVisitor elementVisitor;
 	
 	private ExpressionVisitor expressionVisitor;
+
+    private Set<Object> validFunctionSources = null;
 	
 	
 	public ElementWalker(ElementVisitor elementVisitor, ExpressionVisitor expressionVisitor) {
@@ -42,6 +45,10 @@ public class ElementWalker implements ElementVisitor {
 		this.expressionVisitor = expressionVisitor;
 	}
 
+    public ElementWalker(ElementVisitor elementVisitor, ExpressionVisitor expressionVisitor, Set<Object> validFunctionSources) {
+        this(elementVisitor, expressionVisitor);
+        this.validFunctionSources = validFunctionSources;
+    }
 
 	public void visit(Bind bind) {
 		elementVisitor.visit(bind);
@@ -124,7 +131,7 @@ public class ElementWalker implements ElementVisitor {
 	private void visitExpression(RDFNode node) {
 		if(expressionVisitor != null) {
 			ExpressionWalker expressionWalker = new ExpressionWalker(expressionVisitor);
-			ExpressionVisitors.visit(node, expressionWalker);
+			ExpressionVisitors.visit(node, expressionWalker, validFunctionSources);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package org.topbraid.spin.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,15 +36,16 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class RelevantProperties {
 
 
-	private static void addProperties(QueryOrTemplateCall qot, Set<Property> results) {
-		Model model = qot.getCls().getModel();
+    private static void addProperties(QueryOrTemplateCall qot, Set<Property> results, Set<Object> validFunctionSources) {
+	    
+	    Model model = qot.getCls().getModel();
 		if(qot.getTemplateCall() != null) {
 			TemplateCall templateCall = qot.getTemplateCall();
 			Template template = templateCall.getTemplate();
 			if(template != null) {
 				Command spinQuery = template.getBody();
 				if(spinQuery instanceof Ask || spinQuery instanceof Construct) {
-					ObjectPropertiesGetter getter = new ObjectPropertiesGetter(model, ((Query)spinQuery).getWhere(), templateCall.getArgumentsMapByProperties());
+					ObjectPropertiesGetter getter = new ObjectPropertiesGetter(model, ((Query)spinQuery).getWhere(), templateCall.getArgumentsMapByProperties(), validFunctionSources);
 					getter.run();
 					results.addAll(getter.getResults());
 				}
@@ -52,7 +54,7 @@ public class RelevantProperties {
 		else if(qot.getQuery() instanceof Ask || qot.getQuery() instanceof Construct) {
 			ElementList where = qot.getQuery().getWhere();
 			if(where != null) {
-				ObjectPropertiesGetter getter = new ObjectPropertiesGetter(model, where, null);
+				ObjectPropertiesGetter getter = new ObjectPropertiesGetter(model, where, null, validFunctionSources);
 				getter.run();
 				results.addAll(getter.getResults());
 			}				
@@ -61,6 +63,10 @@ public class RelevantProperties {
 	
 	
 	public static Set<Property> getRelevantPropertiesOfClass(Resource cls) {
+	    return getRelevantPropertiesOfClass(cls, Collections.emptySet());
+	}
+	
+    public static Set<Property> getRelevantPropertiesOfClass(Resource cls, Set<Object> validFunctionSources) {
 		Set<Property> results = new HashSet<Property>();
 		
 		StmtIterator it = cls.getModel().listStatements(null, RDFS.domain, cls);
@@ -79,7 +85,7 @@ public class RelevantProperties {
 			}
 		}
 		
-		Set<Property> others = RelevantProperties.getRelevantSPINPropertiesOfClass(cls);
+		Set<Property> others = RelevantProperties.getRelevantSPINPropertiesOfClass(cls, validFunctionSources);
 		if(others != null) {
 			for(Property other : others) {
 				results.add(other);
@@ -91,11 +97,15 @@ public class RelevantProperties {
 
 
 	public static Set<Property> getRelevantSPINPropertiesOfInstance(Resource root) {
-		if(SP.exists(root.getModel())) {
+	    return getRelevantSPINPropertiesOfInstance(root, Collections.emptySet());
+	}
+	
+    public static Set<Property> getRelevantSPINPropertiesOfInstance(Resource root, Set<Object> validFunctionSources) {
+	    if(SP.exists(root.getModel())) {
 			SPINInstance instance = root.as(SPINInstance.class);
 			Set<Property> results = new HashSet<Property>();
 			for(QueryOrTemplateCall qot : instance.getQueriesAndTemplateCalls(SPIN.constraint)) {
-				addProperties(qot, results);
+				addProperties(qot, results, validFunctionSources);
 			}
 			return results;
 		}
@@ -106,12 +116,16 @@ public class RelevantProperties {
 
 
 	public static Set<Property> getRelevantSPINPropertiesOfClass(Resource cls) {
+	    return getRelevantSPINPropertiesOfClass(cls, Collections.emptySet());
+	}
+	
+    public static Set<Property> getRelevantSPINPropertiesOfClass(Resource cls, Set<Object> validFunctionSources) {
 		if(SP.exists(cls.getModel())) {
 			List<QueryOrTemplateCall> qots = new ArrayList<QueryOrTemplateCall>();
 			SPINUtil.addQueryOrTemplateCalls(cls, SPIN.constraint, qots);
 			Set<Property> results = new HashSet<Property>();
 			for(QueryOrTemplateCall qot : qots) {
-				addProperties(qot, results);
+				addProperties(qot, results, validFunctionSources);
 			}
 			return results;
 		}

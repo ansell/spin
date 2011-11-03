@@ -47,7 +47,15 @@ public class PropertyPathsGetter extends AbstractTriplesVisitor {
 	}
 	
 	
-	public Set<SimplePropertyPath> getResults() {
+	public PropertyPathsGetter(Element element, Map<Property, RDFNode> varBindings, Set<Object> validFunctionSources)
+    {
+	    super(element, varBindings, validFunctionSources);
+        this.targetModel = element.getModel();
+        this.localThis = (Resource) SPIN._this.inModel(targetModel);
+    }
+
+
+    public Set<SimplePropertyPath> getResults() {
 		return results;
 	}
 

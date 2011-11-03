@@ -4,6 +4,9 @@
  *******************************************************************************/
 package org.topbraid.spin.internal;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.topbraid.spin.model.CommandWithWhere;
 import org.topbraid.spin.model.Construct;
 import org.topbraid.spin.model.Element;
@@ -44,7 +47,11 @@ public class ContainsVarChecker {
 	
 
 	public boolean contains(CommandWithWhere command, Resource var_) {
-		
+	    return contains(command, var, Collections.emptySet());
+	}
+	
+    public boolean contains(CommandWithWhere command, Resource var_, Set<Object> validFunctionSources) {
+	        
 		this.var = var_;
 
 		if(command instanceof Construct) {
@@ -86,13 +93,13 @@ public class ContainsVarChecker {
 		ExpressionVisitor ex = new AbstractExpressionVisitor() {
 
 			@Override
-			public void visit(Variable variable) {
+			public void visit(Variable variable, Set<Object> validFunctionSources) {
 				if(var.equals(variable)) {
 					result = true;
 				}
 			}
 		};
-		ElementWalker walker = new ElementWalker(el, ex);
+		ElementWalker walker = new ElementWalker(el, ex, validFunctionSources);
 		ElementList where = command.getWhere();
 		if(where != null) {
 			walker.visit(where);

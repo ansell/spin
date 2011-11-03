@@ -5,8 +5,10 @@
 package org.topbraid.spin.examples;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINInferences;
@@ -65,15 +67,19 @@ public class OWLRLExample {
 		});
 		Model unionModel = ModelFactory.createModelForGraph(multiUnion);
 		
+		Set<Object> validFunctionSources = new HashSet<Object>();
+		
+		validFunctionSources.add("http://topbraid.org/spin/owlrl-all");
+		
 		// Collect rules (and template calls) defined in OWL RL
 		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(unionModel, queryModel, SPIN.rule, true, initialTemplateBindings, false);
-		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false);
+		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(unionModel, queryModel, SPIN.rule, true, initialTemplateBindings, false, validFunctionSources);
+		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, validFunctionSources);
 		SPINRuleComparator comparator = new DefaultSPINRuleComparator(queryModel);
 
 		// Run all inferences
 		System.out.println("Running SPIN inferences...");
-		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, false, SPIN.rule, comparator, null);
+		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, false, SPIN.rule, comparator, null, validFunctionSources);
 		System.out.println("Inferred triples: " + newTriples.size());
 	}
 
