@@ -190,6 +190,31 @@ public class SPINModuleRegistryUnitTest
     }
     
     /**
+     * Test method for
+     * {@link org.topbraid.spin.system.SPINModuleRegistry#getFunction(java.lang.String, com.hp.hpl.jena.rdf.model.Model)}
+     * .
+     */
+    @Test
+    public void testGetFunctionNoModelActualValidSource()
+    {
+        this.testRegistry.reset();
+        
+        Assert.assertEquals(0, this.testRegistry.getFunctions().size());
+        
+        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        
+        Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
+
+        Set<Object> actualValidSources = new HashSet<Object>();
+        actualValidSources.add(this.testFiles2);
+        
+        for(Function nextFunction : this.testRegistry.getFunctions())
+        {
+            Assert.assertNotNull(this.testRegistry.getFunction(nextFunction.getURI(), null, actualValidSources));
+        }
+    }
+    
+    /**
      * Test method for {@link org.topbraid.spin.system.SPINModuleRegistry#getFunctions()}.
      */
     @Test
