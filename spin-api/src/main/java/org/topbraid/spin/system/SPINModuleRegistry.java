@@ -87,13 +87,38 @@ public class SPINModuleRegistry {
 	 * Gets a registered Function with a given URI.
 	 * @param uri  the URI of the Function to get
 	 * @param model  an (optional) Model that should also be used to look up
-	 *               locally defined functions (currently not used)
+	 *               locally defined functions if they are not found in the registry
 	 * @return the Function or null if none was found
 	 */
 	public Function getFunction(String uri, Model model) {
-		Function function = functions.get(uri);
-		if(function != null) {
-			return function;
+	    return getFunction(uri, model, null);
+	}
+	
+    /**
+     * Gets a registered Function with a given URI.
+     * @param uri  the URI of the Function to get
+     * @param model  an (optional) Model that should also be used to look up
+     *               locally defined functions if they are not found in the registry
+     * @param validSources A set of objects corresponding to sources given to SPINModuleRegistry.registerAll, or null to include all available sources
+     * @return the Function or null if none was found
+     */
+    public Function getFunction(String uri, Model model, Set<Object> validSources) {
+	    Function function = functions.get(uri);
+		if(function != null) 
+		{
+		    if(validSources == null)
+		        return function;
+		    else
+		    {
+		        Set<Object> validSet = sources.get(function);
+		        for(Object nextSource : validSet)
+		        {
+		            if(validSet.contains(nextSource))
+		            {
+		                return function;
+		            }
+		        }
+		    }
 		}
 		if(model != null) {
 			function = model.getResource(uri).as(Function.class);

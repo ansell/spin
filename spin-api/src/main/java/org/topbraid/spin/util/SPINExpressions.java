@@ -1,5 +1,7 @@
 package org.topbraid.spin.util;
 
+import java.util.Set;
+
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.Aggregation;
@@ -112,15 +114,26 @@ public class SPINExpressions {
 		}
 	}
 	
-
-	/**
+    /**
+     * Checks whether a given RDFNode is an expression.
+     * In order to be regarded as expression it must be a well-formed
+     * function call, aggregation or variable.
+     * @param node  the RDFNode
+     * @return true if node is an expression
+     */
+    public static boolean isExpression(RDFNode node) {
+        return isExpression(node, null);
+    }
+    
+    /**
 	 * Checks whether a given RDFNode is an expression.
 	 * In order to be regarded as expression it must be a well-formed
 	 * function call, aggregation or variable.
 	 * @param node  the RDFNode
+	 * @param validSources A set of objects that correspond to objects given in SPINModuleRegistry.registerAll calls or null to include all sources
 	 * @return true if node is an expression
 	 */
-	public static boolean isExpression(RDFNode node) {
+	public static boolean isExpression(RDFNode node, Set<Object> validSources) {
 		if(node instanceof Resource && SP.exists(((Resource)node).getModel())) {
 			RDFNode expr = SPINFactory.asExpression(node);
 			if(expr instanceof Variable) {
@@ -132,7 +145,7 @@ public class SPINExpressions {
 			if(expr instanceof FunctionCall) {
 				Resource function = ((FunctionCall)expr).getFunction();
 				if(function.isURIResource()) {
-					if(SPINModuleRegistry.get().getFunction(function.getURI(), ((Resource)node).getModel()) != null) {
+					if(SPINModuleRegistry.get().getFunction(function.getURI(), ((Resource)node).getModel(), validSources) != null) {
 						return true;
 					}
 					if(FunctionRegistry.get().isRegistered(function.getURI())) {

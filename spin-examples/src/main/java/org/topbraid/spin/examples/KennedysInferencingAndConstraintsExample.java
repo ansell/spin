@@ -45,7 +45,7 @@ public class KennedysInferencingAndConstraintsExample {
 		ontModel.addSubModel(newTriples);
 
 		// Register locally defined functions
-		SPINModuleRegistry.get().registerAll(ontModel, null);
+		SPINModuleRegistry.get().registerAll(ontModel, "http://topbraid.org/examples/kennedysSPIN");
 
 		// Run all inferences
 		SPINInferences.run(ontModel, newTriples, null, null, false, null);

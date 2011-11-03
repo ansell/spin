@@ -579,6 +579,7 @@ public class JenaUtil {
 		StmtIterator it = model.listStatements(null, RDFS.subPropertyOf, predicate);
 		while (it.hasNext()) {
 			Statement sps = it.nextStatement();
+			// avoid loops by checking whether we have been to this property before
 			if (!reached.contains(sps.getSubject())) {
 				Property subProperty = asProperty(sps.getSubject());
 				listAllProperties(subject, subProperty, reached, results);

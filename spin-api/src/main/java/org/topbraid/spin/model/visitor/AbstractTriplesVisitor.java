@@ -37,6 +37,8 @@ public abstract class AbstractTriplesVisitor {
 	private Map<Property,RDFNode> bindings;
 	
 	private Element element;
+
+    private Set<Object> validSources = null;
 	
 	
 	public AbstractTriplesVisitor(Element element, Map<Property,RDFNode> initialBindings) {
@@ -44,6 +46,11 @@ public abstract class AbstractTriplesVisitor {
 		this.element = element;
 	}
 	
+    public AbstractTriplesVisitor(Element element, Map<Property,RDFNode> initialBindings, Set<Object> validFunctionSources) {
+        this(element, initialBindings);
+        this.validSources  = validFunctionSources;
+    }
+    
 	
 	public void run() {
 		ElementWalker walker = new ElementWalker(new MyElementVisitor(), new MyExpressionVisitor());
@@ -78,7 +85,7 @@ public abstract class AbstractTriplesVisitor {
 			Resource function = functionCall.getFunction();
 			if(function != null && function.isURIResource() && !reachedFunctionCalls.contains(functionCall)) {
 				reachedFunctionCalls.add(functionCall);
-				Resource f = SPINModuleRegistry.get().getFunction(function.getURI(), null);
+				Resource f = SPINModuleRegistry.get().getFunction(function.getURI(), null, validSources);
 				if(f != null) {
 					Statement bodyS = f.getProperty(SPIN.body);
 					if(bodyS != null && bodyS.getObject().isResource()) {

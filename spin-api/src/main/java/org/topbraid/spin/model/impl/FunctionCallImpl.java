@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.topbraid.spin.model.Function;
 import org.topbraid.spin.model.FunctionCall;
@@ -100,7 +101,11 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	
 	
 	public Resource getFunction() {
-		
+		return getFunction(null);
+	}
+	
+    public Resource getFunction(Set<Object> validFunctionSources) {
+        
 		// Need to iterate over rdf:types - some may have been inferred
 		// Return the most specific type, i.e. the one that does not have
 		// any subclasses
@@ -124,7 +129,7 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 				return type;
 			}
 			else {
-				Resource global = SPINModuleRegistry.get().getFunction(type.getURI(), null);
+				Resource global = SPINModuleRegistry.get().getFunction(type.getURI(), null, validFunctionSources);
 				if(global != null) {
 					return global;
 				}
