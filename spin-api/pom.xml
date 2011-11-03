@@ -19,6 +19,8 @@
 			<groupId>org.topquadrant</groupId>
 			<artifactId>spin-base</artifactId>
 			<version>${spin.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
@@ -33,6 +35,13 @@
 			<version>2.8.7</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<type>jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
