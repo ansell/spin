@@ -80,7 +80,11 @@ public class SPINImports {
 	 * @return either model or the union of model and its spin:imports
 	 */
 	public Model getImportsModel(Model model) throws IOException {
-		Set<String> uris = new HashSet<String>();
+	    return getImportsModel(model, null);
+	}
+	
+    public Model getImportsModel(Model model, Object source) throws IOException {
+	    Set<String> uris = new HashSet<String>();
 		StmtIterator it = model.listStatements(null, SPIN.imports, (RDFNode)null);
 		while(it.hasNext()) {
 			Statement s = it.nextStatement();
@@ -117,7 +121,7 @@ public class SPINImports {
 			
 			Model unionModel = ModelFactory.createModelForGraph(union);
 			if(needsRegistration) {
-				SPINModuleRegistry.get().registerAll(unionModel, null);
+				SPINModuleRegistry.get().registerAll(unionModel, source);
 			}
 			return unionModel;
 		}

@@ -206,15 +206,12 @@ public class SPINModuleRegistry {
 	 * from the SPL namespace.
 	 */
 	public void init() {
+	    // TODO: do these two registerAll calls work the same way as the previous one?
+	    // Changed from one call to two to include the source for the functions from each of the two models
 		Model splModel = SPL.getModel();
+        registerAll(splModel, SPL.BASE_URI);
 		Model spinModel = SPIN.getModel();
-		MultiUnion multiUnion = new MultiUnion(new Graph[] {
-			splModel.getGraph(),
-			spinModel.getGraph()
-		});
-		multiUnion.setBaseGraph(splModel.getGraph());
-		Model unionModel = ModelFactory.createModelForGraph(multiUnion);
-		registerAll(unionModel, null);
+        registerAll(spinModel, SPIN.BASE_URI);
 
 		FunctionRegistry.get().put(SPIN.eval.getURI(), new EvalFunction());
 	}

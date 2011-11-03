@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.topbraid.spin.constraints.ConstraintViolation;
 import org.topbraid.spin.constraints.SPINConstraints;
+import org.topbraid.spin.statistics.SPINStatistics;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.vocabulary.SPIN;
 
@@ -64,7 +66,7 @@ public class CheckConstraints {
 		SPINModuleRegistry.get().registerAll(ontModel, baseURI);
 
 		// Perform constraint checking
-		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null);
+		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, baseURI);
 		
 		// Create results model
 		Model results = ModelFactory.createDefaultModel();

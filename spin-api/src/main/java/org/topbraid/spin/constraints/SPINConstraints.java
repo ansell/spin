@@ -253,23 +253,41 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations (empty if all is OK)
 	 */
 	public static List<ConstraintViolation> check(Resource resource, ProgressMonitor monitor) {
-		return check(resource, new LinkedList<SPINStatistics>(), monitor);
+		return check(resource, new LinkedList<SPINStatistics>(), monitor, null);
 	}
 	
 	
 	/**
 	 * Checks all spin:constraints for a given Resource.
+	 * 
+	 * NOTE: This will register any functions that are found in the singleton SPINModuleRegistry
+	 * 
 	 * @param resource  the instance to run constraint checks on
 	 * @param stats  an (optional) List to add statistics to
 	 * @param monitor  an (optional) progress monitor (currently ignored)
 	 * @return a List of ConstraintViolations (empty if all is OK)
 	 */
 	public static List<ConstraintViolation> check(Resource resource, List<SPINStatistics> stats, ProgressMonitor monitor) {
-		List<ConstraintViolation> results = new LinkedList<ConstraintViolation>();
+	    return check(resource, stats, monitor, null);
+	}
+	
+    /**
+     * Checks all spin:constraints for a given Resource.
+     * 
+     * NOTE: This will register any functions that are found in the singleton SPINModuleRegistry
+     * 
+     * @param resource  the instance to run constraint checks on
+     * @param stats  an (optional) List to add statistics to
+     * @param monitor  an (optional) progress monitor (currently ignored)
+     * @param source an object to use in the SPINModuleRegistry as the source of any functions that are discovered
+     * @return a List of ConstraintViolations (empty if all is OK)
+     */
+    public static List<ConstraintViolation> check(Resource resource, List<SPINStatistics> stats, ProgressMonitor monitor, Object source) {
+	    List<ConstraintViolation> results = new LinkedList<ConstraintViolation>();
 		
 		// If spin:imports exist, then continue with the union model
 		try {
-			Model importsModel = SPINImports.get().getImportsModel(resource.getModel());
+			Model importsModel = SPINImports.get().getImportsModel(resource.getModel(), source);
 			if(importsModel != resource.getModel()) {
 				resource = ((Resource)resource.inModel(importsModel));
 			}
@@ -294,7 +312,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations
 	 */
 	public static List<ConstraintViolation> check(Model model, ProgressMonitor monitor) {
-		return check(model, null, monitor);
+		return check(model, null, monitor, null);
 	}
 	
 
@@ -309,8 +327,23 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations
 	 */
 	public static List<ConstraintViolation> check(Model model, List<SPINStatistics> stats, ProgressMonitor monitor) {
+	    return check(model, stats, monitor, null);
+	}
+	
+    /**
+     * Checks all instances in a given Model against all spin:constraints and
+     * returns a List of constraint violations. 
+     * A ProgressMonitor can be provided to enable the user to get intermediate
+     * status reports and to cancel the operation.
+     * @param model  the Model to operate on
+     * @param stats  an (optional) List to write statistics reports to
+     * @param monitor  an optional ProgressMonitor
+     * @param source the source to use for any new functions that are found
+     * @return a List of ConstraintViolations
+     */
+    public static List<ConstraintViolation> check(Model model, List<SPINStatistics> stats, ProgressMonitor monitor, Object source) {
 		List<ConstraintViolation> results = new LinkedList<ConstraintViolation>();
-		run(model, results, stats, monitor);
+		run(model, results, stats, monitor, source);
 		return results;
 	}
 	
@@ -432,13 +465,25 @@ public class SPINConstraints {
 		}
 	}
 
-	
+	@Deprecated
 	private static void run(Model model, List<ConstraintViolation> results, List<SPINStatistics> stats, ProgressMonitor monitor) {
-		Map<CommandWrapper,Map<String,RDFNode>> templateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
+	    run(model, results, stats, monitor, null);
+	}
+	
+	/**
+	 * 
+	 * @param model TODO
+	 * @param results TODO
+	 * @param stats TODO
+	 * @param monitor TODO
+	 * @param source The object to use as the source for any new functions that are discovered
+	 */
+    private static void run(Model model, List<ConstraintViolation> results, List<SPINStatistics> stats, ProgressMonitor monitor, Object source) {
+	    Map<CommandWrapper,Map<String,RDFNode>> templateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
 		
 		// If spin:imports exist then continue with the union model
 		try {
-			model = SPINImports.get().getImportsModel(model);
+			model = SPINImports.get().getImportsModel(model, source);
 		}
 		catch(IOException ex) {
 			// TODO: better error handling
