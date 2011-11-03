@@ -63,6 +63,7 @@ public class SPINModuleRegistryUnitTest
         //this.testRegistry = new SPINModuleRegistry(FunctionRegistry.standardRegistry());
 //        this.testRegistry = new SPINModuleRegistry(FunctionRegistry.get());
         
+        this.testRegistry.reset();
         this.testRegistry.init();
         
         this.testFiles1 = new ArrayList<String>(6);
