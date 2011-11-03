@@ -31,7 +31,7 @@ public class SelectImpl extends QueryImpl implements Select {
 		super(node, eh);
 	}
 
-	
+	@Override
 	public List<Resource> getResultVariables() {
 		List<Resource> results = new LinkedList<Resource>();
 		for(RDFNode node : getList(SP.resultVariables)) {
@@ -42,16 +42,19 @@ public class SelectImpl extends QueryImpl implements Select {
 	}
 	
 	
+    @Override
 	public boolean isDistinct() {
 		return hasProperty(SP.distinct, getModel().createTypedLiteral(true));
 	}
 	
 	
+    @Override
 	public boolean isReduced() {
 		return hasProperty(SP.reduced, getModel().createTypedLiteral(true));
 	}
 
 
+    @Override
 	public void print(PrintContext p) {
 		printComment(p);
 		printPrefixes(p);
