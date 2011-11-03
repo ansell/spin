@@ -110,7 +110,7 @@ public class SPINModuleRegistry {
 		    else
 		    {
 		        Set<Object> validSet = sources.get(function);
-		        for(Object nextSource : validSet)
+		        for(Object nextSource : validSources)
 		        {
 		            if(validSet.contains(nextSource))
 		            {

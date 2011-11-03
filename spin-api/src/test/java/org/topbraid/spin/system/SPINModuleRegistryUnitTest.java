@@ -6,6 +6,8 @@ package org.topbraid.spin.system;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.After;
@@ -101,11 +103,90 @@ public class SPINModuleRegistryUnitTest
      * {@link org.topbraid.spin.system.SPINModuleRegistry#getFunction(java.lang.String, com.hp.hpl.jena.rdf.model.Model)}
      * .
      */
-    @Ignore
     @Test
-    public void testGetFunction()
+    public void testGetFunctionNoModel()
     {
-        Assert.fail("Not yet implemented");
+        this.testRegistry.reset();
+        
+        Assert.assertEquals(0, this.testRegistry.getFunctions().size());
+        
+        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        
+        Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
+
+        for(Function nextFunction : this.testRegistry.getFunctions())
+        {
+            Assert.assertNotNull(this.testRegistry.getFunction(nextFunction.getURI(), null));
+        }
+    }
+    
+    /**
+     * Test method for
+     * {@link org.topbraid.spin.system.SPINModuleRegistry#getFunction(java.lang.String, com.hp.hpl.jena.rdf.model.Model)}
+     * .
+     */
+    @Test
+    public void testGetFunctionNoModelNullValidSources()
+    {
+        this.testRegistry.reset();
+        
+        Assert.assertEquals(0, this.testRegistry.getFunctions().size());
+        
+        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        
+        Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
+
+        for(Function nextFunction : this.testRegistry.getFunctions())
+        {
+            Assert.assertNotNull(this.testRegistry.getFunction(nextFunction.getURI(), null, null));
+        }
+    }
+    
+    /**
+     * Test method for
+     * {@link org.topbraid.spin.system.SPINModuleRegistry#getFunction(java.lang.String, com.hp.hpl.jena.rdf.model.Model)}
+     * .
+     */
+    @Test
+    public void testGetFunctionNoModelEmptyValidSources()
+    {
+        this.testRegistry.reset();
+        
+        Assert.assertEquals(0, this.testRegistry.getFunctions().size());
+        
+        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        
+        Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
+
+        for(Function nextFunction : this.testRegistry.getFunctions())
+        {
+            Assert.assertNotNull(this.testRegistry.getFunction(nextFunction.getURI(), null, Collections.emptySet()));
+        }
+    }
+    
+    /**
+     * Test method for
+     * {@link org.topbraid.spin.system.SPINModuleRegistry#getFunction(java.lang.String, com.hp.hpl.jena.rdf.model.Model)}
+     * .
+     */
+    @Test
+    public void testGetFunctionNoModelDummyValidSource()
+    {
+        this.testRegistry.reset();
+        
+        Assert.assertEquals(0, this.testRegistry.getFunctions().size());
+        
+        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        
+        Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
+
+        Set<Object> dummyValidSources = new HashSet<Object>();
+        dummyValidSources.add(new Object());
+        
+        for(Function nextFunction : this.testRegistry.getFunctions())
+        {
+            Assert.assertNull(this.testRegistry.getFunction(nextFunction.getURI(), null, dummyValidSources));
+        }
     }
     
     /**
