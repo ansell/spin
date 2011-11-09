@@ -3,7 +3,6 @@
  */
 package org.topbraid.spin.system;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,11 +16,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.topbraid.spin.model.Function;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.shared.ReificationStyle;
 
 /**
  * Tests the Singleton and non-Singleton functionality for the SPINModuleRegistry class
@@ -35,23 +29,6 @@ public class SPINModuleRegistryUnitTest
     private Collection<String> testFiles1;
     private Collection<String> testFiles2;
     private Collection<String> testFiles3;
-    
-    private OntModel loadModelFromTestFile(final Collection<String> nextTestFiles)
-    {
-        final Model baseModel = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
-        
-        for(final String nextTestFile : nextTestFiles)
-        {
-            final InputStream stream = this.getClass().getResourceAsStream(nextTestFile);
-            
-            Assert.assertNotNull("A test file was not found nextTestFile=" + nextTestFile, stream);
-            
-            baseModel.read(stream, "http://test.spin.example.org/testbaseuri#");
-        }
-        
-        return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
-        
-    }
     
     /**
      * @throws java.lang.Exception
@@ -111,7 +88,7 @@ public class SPINModuleRegistryUnitTest
         
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
 
@@ -133,7 +110,7 @@ public class SPINModuleRegistryUnitTest
         
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
 
@@ -155,7 +132,7 @@ public class SPINModuleRegistryUnitTest
         
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
 
@@ -177,7 +154,7 @@ public class SPINModuleRegistryUnitTest
         
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
 
@@ -202,7 +179,7 @@ public class SPINModuleRegistryUnitTest
         
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
 
@@ -225,7 +202,7 @@ public class SPINModuleRegistryUnitTest
         
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
 
@@ -252,7 +229,7 @@ public class SPINModuleRegistryUnitTest
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
         // test for a single source
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles1), this.testFiles1);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles1), this.testFiles1);
         
         functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles1);
         
@@ -288,7 +265,7 @@ public class SPINModuleRegistryUnitTest
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
         // test load from a different source
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         Assert.assertEquals(60, this.testRegistry.getFunctions().size());
         
@@ -327,7 +304,7 @@ public class SPINModuleRegistryUnitTest
         // test for multiple sources
         
         // start with one source and verify that it returns results
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles2);
         
@@ -336,7 +313,7 @@ public class SPINModuleRegistryUnitTest
         Assert.assertTrue(functionsBySource.size() > 0);
         
         // now load from another source
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles3), this.testFiles3);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles3), this.testFiles3);
         
         functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles3);
         
@@ -396,14 +373,14 @@ public class SPINModuleRegistryUnitTest
         Assert.assertEquals(0, initialSize);
         
         // start with one source and verify that it returns results
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles2);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
         int firstAddedSize = this.testRegistry.getFunctions().size();
         
         Assert.assertTrue(firstAddedSize > 0);
 
         // pretend to register the functions from the same file using a different source object
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles2), this.testFiles3);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles3);
         
         int afterSecondSourceAddedSize = this.testRegistry.getFunctions().size();
 
@@ -599,7 +576,7 @@ public class SPINModuleRegistryUnitTest
         Assert.assertEquals(0, this.testRegistry.getFunctions().size());
         
         // then registry some functions from testFiles
-        this.testRegistry.registerAll(this.loadModelFromTestFile(this.testFiles1), this.testFiles1);
+        this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles1), this.testFiles1);
         
         // check that they were registered
         Assert.assertTrue(this.testRegistry.getFunctions().size() > 0);
