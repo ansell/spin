@@ -4,8 +4,10 @@
  *******************************************************************************/
 package org.topbraid.spin.model.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.topbraid.spin.model.Argument;
 import org.topbraid.spin.model.Module;
@@ -89,7 +91,12 @@ public class TemplateCallImpl extends ModuleCallImpl implements TemplateCall {
 	
 	@Override
 	public Module getModule() {
-		return getTemplate();
+	    return getModule(Collections.emptySet());
+	}
+	
+    @Override
+    public Module getModule(Set<Object> validFunctionSources) {
+	    return getTemplate();
 	}
 
 

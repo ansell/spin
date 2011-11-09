@@ -4,6 +4,8 @@
  *******************************************************************************/
 package org.topbraid.spin.model;
 
+import java.util.Set;
+
 import com.hp.hpl.jena.rdf.model.Resource;
 
 
@@ -15,4 +17,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public interface ModuleCall extends Resource {
 	
 	Module getModule();
+
+    Module getModule(Set<Object> validFunctionSources);
+
 }

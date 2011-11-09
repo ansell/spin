@@ -6,6 +6,7 @@ package org.topbraid.spin.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.topbraid.spin.model.print.Printable;
 
@@ -45,4 +46,7 @@ public interface FunctionCall extends Printable, ModuleCall {
 	 * @return the function in its original Model
 	 */
 	Resource getFunction();
+
+
+    Resource getFunction(Set<Object> validFunctionSources);
 }

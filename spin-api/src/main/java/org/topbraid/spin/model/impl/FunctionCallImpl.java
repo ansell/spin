@@ -99,11 +99,12 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 		return values;
 	}
 	
-	
+	@Override
 	public Resource getFunction() {
 		return getFunction(null);
 	}
 	
+    @Override
     public Resource getFunction(Set<Object> validFunctionSources) {
         
 		// Need to iterate over rdf:types - some may have been inferred
@@ -146,7 +147,12 @@ public class FunctionCallImpl extends ModuleCallImpl implements FunctionCall {
 	
 	@Override
 	public Module getModule() {
-		Resource function = getFunction();
+	    return getModule(Collections.emptySet());
+	}	    
+
+	@Override
+	public Module getModule(Set<Object> validFunctionSources) {
+	    Resource function = getFunction(validFunctionSources);
 		if(function != null) {
 			return function.as(Function.class);
 		}

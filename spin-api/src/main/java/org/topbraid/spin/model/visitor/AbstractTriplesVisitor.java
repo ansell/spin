@@ -82,7 +82,7 @@ public abstract class AbstractTriplesVisitor {
 
 		@Override
 		public void visit(FunctionCall functionCall, Set<Object> validFunctionSources) {
-			Resource function = functionCall.getFunction();
+			Resource function = functionCall.getFunction(validFunctionSources);
 			if(function != null && function.isURIResource() && !reachedFunctionCalls.contains(functionCall)) {
 				reachedFunctionCalls.add(functionCall);
 				Resource f = SPINModuleRegistry.get().getFunction(function.getURI(), null, validFunctionSources);

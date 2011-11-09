@@ -51,13 +51,13 @@ public class SPINModuleRegistryUnitTest
         this.testFiles1.add("/owlrl.owl");
         this.testFiles1.add("/owlrl-all.owl");
         
-        this.testFiles2 = new ArrayList<String>(3);
+        this.testFiles2 = new ArrayList<String>(4);
         this.testFiles2.add("/sp.owl");
         this.testFiles2.add("/spl.owl");
         this.testFiles2.add("/spin.owl");
-        this.testFiles1.add("/owlrl.owl");
+        this.testFiles2.add("/owlrl.owl");
         
-        this.testFiles3 = new ArrayList<String>(3);
+        this.testFiles3 = new ArrayList<String>(1);
         this.testFiles3.add("/spinowl.owl");
         
     }
@@ -267,7 +267,7 @@ public class SPINModuleRegistryUnitTest
         // test load from a different source
         this.testRegistry.registerAll(SpinTestUtils.loadModelFromTestFiles(this.testFiles2), this.testFiles2);
         
-        Assert.assertEquals(60, this.testRegistry.getFunctions().size());
+        Assert.assertEquals(62, this.testRegistry.getFunctions().size());
         
         functionsBySource = this.testRegistry.getFunctionsBySource(this.testFiles2);
         
