@@ -58,6 +58,8 @@ public class KennedysInferencingAndConstraintsTest {
         // verify that the test sources were loaded correctly
         Assert.assertEquals("Test sources were not loaded correctly", 392, baseModel.size());
         
+        baseModel.write(System.out, "N3");
+        
         ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
         
         newTriples = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
