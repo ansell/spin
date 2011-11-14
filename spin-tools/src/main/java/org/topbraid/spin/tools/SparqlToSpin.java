@@ -47,7 +47,7 @@ public class SparqlToSpin {
         InputStream is = new FileInputStream(file);
         //String lang = FileUtils.guessLang(fileName);
 
-        IOUtils.toString(is, "UTF-8");
+        query = IOUtils.toString(is, "UTF-8");
 		
         // setup a dummy model so that ARQ and SPIN can use it to manipulate the query as RDF statements
         Model model = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
