@@ -27,6 +27,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.ReificationStyle;
+import com.hp.hpl.jena.util.FileManager;
 
 
 /**
@@ -53,7 +54,7 @@ public class KennedysInferencingAndConstraintsTest {
         
         // Load main file
         Model baseModel = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
-        baseModel.read("http://topbraid.org/examples/kennedysSPIN");
+        baseModel.add(FileManager.get().loadModel("http://topbraid.org/examples/kennedysSPIN"));
         
         // verify that the test sources were loaded correctly
         Assert.assertEquals("Test sources were not loaded correctly", 392, baseModel.size());

@@ -14,6 +14,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINInferences;
 import org.topbraid.spin.inference.SPINRuleComparator;
@@ -31,6 +33,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.ReificationStyle;
+import com.hp.hpl.jena.util.FileManager;
 
 
 /**
@@ -41,8 +44,11 @@ import com.hp.hpl.jena.shared.ReificationStyle;
  * actual query model does not need to include the OWL RL model at execution time.
  * 
  * @author Holger Knublauch
+ * @author Peter Ansell p_ansell@yahoo.com
  */
 public class OWLRLTest {
+
+    private static final Logger log = LoggerFactory.getLogger(OWLRLTest.class);
 
     private Model unionModel;
     private OntModel queryModel;
@@ -61,7 +67,7 @@ public class OWLRLTest {
         SPINModuleRegistry.get().init();
         
         // Load domain model with imports
-        System.out.println("Loading domain ontology...");
+        log.info("Loading domain ontology...");
         queryModel = loadModelWithImports("http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl");
         
         Assert.assertEquals("Test resource was not loaded correctly", 2332, queryModel.size());
@@ -70,7 +76,7 @@ public class OWLRLTest {
         queryModel.addSubModel(newTriples);
         
         // Load OWL RL library from the web
-        System.out.println("Loading OWL RL ontology...");
+        log.info("Loading OWL RL ontology...");
         OntModel owlrlModel = loadModelWithImports("http://topbraid.org/spin/owlrl-all");
 
         Assert.assertEquals("OWL RL ontology was not loaded correctly", 3324, owlrlModel.size());
@@ -130,17 +136,19 @@ public class OWLRLTest {
 		SPINRuleComparator comparator = new DefaultSPINRuleComparator(queryModel);
 
 		// Run all inferences
-		System.out.println("Running SPIN inferences...");
+		log.info("Running SPIN inferences...");
 		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, false, SPIN.rule, comparator, null, validFunctionSources);
-		System.out.println("Inferred triples: " + newTriples.size());
+		log.info("Inferred triples: " + newTriples.size());
 		
 		Assert.assertEquals(5130, newTriples.size());
 	}
 
 	
 	private static OntModel loadModelWithImports(String url) {
-		Model baseModel = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
-		baseModel.read(url);
-		return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
+        Model baseModel = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
+        baseModel.add(FileManager.get().loadModel(url));
+        
+        // TODO: make the OntModelSpec here configurable
+        return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
 	}
 }
