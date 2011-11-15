@@ -340,7 +340,7 @@ public class SPINConstructors {
 	 * @param monitor  an optional progress monitor
 	 */
 	public static void constructAll(Model queryModel, Model targetModel, ProgressMonitor monitor) {
-	    
+	    constructAll(queryModel, targetModel, monitor, Collections.emptySet());
 	}
 	
     /**
