@@ -44,21 +44,21 @@ public class SPINModuleRegistryUnitTest
         this.testRegistry.init();
         
         this.testFiles1 = new ArrayList<String>(6);
-        this.testFiles1.add("/sp.owl");
-        this.testFiles1.add("/spl.owl");
-        this.testFiles1.add("/spin.owl");
-        this.testFiles1.add("/spinowl.owl");
-        this.testFiles1.add("/owlrl.owl");
-        this.testFiles1.add("/owlrl-all.owl");
+        this.testFiles1.add("/test/sp");
+        this.testFiles1.add("/test/spl");
+        this.testFiles1.add("/test/spin");
+        this.testFiles1.add("/test/spinowl");
+        this.testFiles1.add("/test/owlrl");
+        this.testFiles1.add("/test/owlrl-all");
         
         this.testFiles2 = new ArrayList<String>(4);
-        this.testFiles2.add("/sp.owl");
-        this.testFiles2.add("/spl.owl");
-        this.testFiles2.add("/spin.owl");
-        this.testFiles2.add("/owlrl.owl");
+        this.testFiles2.add("/test/sp");
+        this.testFiles2.add("/test/spl");
+        this.testFiles2.add("/test/spin");
+        this.testFiles2.add("/test/owlrl");
         
         this.testFiles3 = new ArrayList<String>(1);
-        this.testFiles3.add("/spinowl.owl");
+        this.testFiles3.add("/test/spinowl");
         
     }
     

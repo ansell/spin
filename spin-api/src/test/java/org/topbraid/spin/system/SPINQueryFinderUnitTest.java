@@ -75,15 +75,15 @@ public class SPINQueryFinderUnitTest
         this.testRegistry.init();
         
         this.testFiles1 = new ArrayList<String>(5);
-        this.testFiles1.add("/sp.owl");
-        this.testFiles1.add("/spl.owl");
-        this.testFiles1.add("/spin.owl");
-        this.testFiles1.add("/owlrl.owl");
-        this.testFiles1.add("/owlrl-all.owl");
+        this.testFiles1.add("/test/sp");
+        this.testFiles1.add("/test/spl");
+        this.testFiles1.add("/test/spin");
+        this.testFiles1.add("/test/owlrl");
+        this.testFiles1.add("/test/owlrl-all");
         
         OntModel testOntologyModel = SpinTestUtils.loadModelFromTestFiles(testFiles1);
         
-        Assert.assertEquals(7094, testOntologyModel.size());
+        Assert.assertEquals(7113, testOntologyModel.size());
         
         this.testRegistry.registerAll(testOntologyModel, this.testObject);
         

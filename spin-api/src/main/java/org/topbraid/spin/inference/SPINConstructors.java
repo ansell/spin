@@ -351,14 +351,30 @@ public class SPINConstructors {
      * @param validFunctionSources a set of objects defined using SPINModuleRegistry.registerAll that define valid sources for functions
      */
     public static void constructAll(Model queryModel, Model targetModel, ProgressMonitor monitor, Set<Object> validFunctionSources) {
-		Set<Resource> classes = getClassesWithConstructor(queryModel);
+        OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, queryModel);
+        
+        constructAll(ontModel, targetModel, monitor, validFunctionSources);
+    }
+    
+    /**
+     * Construct using an OntModel
+     * 
+     * This method is necessary to enable custom LocationMappers, which are derived through OntModelSpec instances.
+     * OntModelSpec.OWL_MEM was hardcoded previously, which used the default Jena LocationMapper
+     * 
+     * @param ontModel
+     * @param targetModel
+     * @param monitor
+     * @param validFunctionSources
+     */
+    public static void constructAll(OntModel ontModel, Model targetModel, ProgressMonitor monitor, Set<Object> validFunctionSources) {
+        Set<Resource> classes = getClassesWithConstructor(ontModel);
 		List<Resource> instances = new ArrayList<Resource>(getInstances(classes));
-		OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, queryModel);
-		if(targetModel != queryModel) {
+		if(targetModel != ontModel) {
 			ontModel.addSubModel(targetModel);
 		}
 		Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
-		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, validFunctionSources);
+		Map<Resource,List<CommandWrapper>> class2Constructor = SPINQueryFinder.getClass2QueryMap(ontModel, ontModel, SPIN.constructor, true, initialTemplateBindings, false, validFunctionSources);
 		construct(ontModel, instances, targetModel, new HashSet<Resource>(), class2Constructor, initialTemplateBindings, monitor);
 	}
 	

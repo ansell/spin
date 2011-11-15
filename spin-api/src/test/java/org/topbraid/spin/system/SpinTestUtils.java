@@ -27,6 +27,7 @@ public class SpinTestUtils
             baseModel.read(stream, "http://test.spin.example.org/testbaseuri#");
         }
         
+        // TODO: replace OntModelSpec.OWL_MEM with a custom OntModelSpec that includes an OntDocumentManager with custom FileManager and LocationMapper to enable local resolution without using the global jena location-mapping.n3 solution
         return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
         
     }

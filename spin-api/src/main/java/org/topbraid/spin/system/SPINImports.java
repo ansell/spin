@@ -54,19 +54,39 @@ public class SPINImports {
 	
 	/**
 	 * Attempts to load a graph with a given URI.
-	 * In the default implementation, this uses the Jena
-	 * OntDocumentManager and default loading mechanisms.
-	 * Subclasses can override this. 
+	 * 
+	 * Uses the default Jena OntModelSpec to load imports.
+	 * 
+	 * To use a custom OntModelSpec to load imports, use:
+	 * 
+	 *    getImportedGraph(String, OntModelSpec)
+	 * 
 	 * @param uri  the base URI of the graph to load
 	 * @return the Graph or null to ignore this
 	 */
 	protected Graph getImportedGraph(String uri) throws IOException {
-		Model model = OntDocumentManager.getInstance().getModel(uri);
+	    return getImportedGraph(uri, OntModelSpec.OWL_MEM);
+	}
+	
+	/**
+	 * Attempts to load a graph with the given URI using the given OntModelSpec for import mapping
+	 * 
+	 * FIXME: The document manager in the given OntModelSpec is used to cache the results, so it may be a source of memory leaks!
+	 * 
+	 * @param uri   the base URI of the graph to load
+	 * @param nextOntModelSpec The OntModelSpec to use when loading the imports
+	 * @return  the Graph or null to ignore this
+	 * @throws IOException
+	 */
+    protected Graph getImportedGraph(String uri, OntModelSpec nextOntModelSpec) throws IOException {
+	    
+        // Remove use of singleton OntDocumentManager in favour of the more extensible (and non-Singleton!!) OntModelSpec method
+        Model model = nextOntModelSpec.getDocumentManager().getModel(uri);
 		if(model == null) {
 			Model baseModel = JenaUtil.createDefaultModel();
 			baseModel.read(uri);
-			model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
-			OntDocumentManager.getInstance().addModel(uri, model);
+			model = ModelFactory.createOntologyModel(nextOntModelSpec, baseModel);
+			nextOntModelSpec.getDocumentManager().addModel(uri, model);
 		}
 		return model.getGraph();
 	}
@@ -80,10 +100,21 @@ public class SPINImports {
 	 * @return either model or the union of model and its spin:imports
 	 */
 	public Model getImportsModel(Model model) throws IOException {
-	    return getImportsModel(model, null);
+        return getImportsModel(model, null, OntModelSpec.OWL_MEM);
 	}
 	
-    public Model getImportsModel(Model model, Object source) throws IOException {
+	/**
+     * Checks if spin:imports have been declared and adds them to a union model.
+     * Will also register any SPIN modules defined in those imports that haven't
+     * been loaded before.
+	 * 
+	 * @param model  the base Model to operate on
+	 * @param source  the source object to use for any discovered functions, to enable fetching of functions based on this object
+	 * @param nextOntModelSpec  the OntModelSpec to use when loading imports, as this defines the LocationMapper etc to use, through OntDocumentManager and FileManager
+     * @return either model or the union of model and its spin:imports
+	 * @throws IOException
+	 */
+    public Model getImportsModel(Model model, Object source, OntModelSpec nextOntModelSpec) throws IOException {
 	    Set<String> uris = new HashSet<String>();
 		StmtIterator it = model.listStatements(null, SPIN.imports, (RDFNode)null);
 		while(it.hasNext()) {
@@ -104,7 +135,7 @@ public class SPINImports {
 			
 			boolean needsRegistration = false;
 			for(String uri : uris) {
-				Graph graph = getImportedGraph(uri);
+				Graph graph = getImportedGraph(uri, nextOntModelSpec);
 				if(graph != null) {
 					union.addGraph(graph);
 					if(!registeredURIs.contains(uri)) {

@@ -72,7 +72,7 @@ public class CheckConstraints {
 		validFunctionSources.add(baseURI);
 		
 		// Perform constraint checking
-		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, baseURI, validFunctionSources);
+		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, OntModelSpec.OWL_MEM, baseURI, validFunctionSources);
 		
 		// Create results model
 		Model results = ModelFactory.createDefaultModel();

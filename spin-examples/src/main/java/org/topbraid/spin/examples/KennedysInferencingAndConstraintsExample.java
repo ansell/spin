@@ -61,7 +61,7 @@ public class KennedysInferencingAndConstraintsExample {
 		System.out.println("Inferred triples: " + newTriples.size());
 
 		// Run all constraints
-		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
+		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, OntModelSpec.OWL_MEM, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
 		System.out.println("Constraint violations:");
 		for(ConstraintViolation cv : cvs) {
 			System.out.println(" - at " + SPINLabels.get().getLabel(cv.getRoot()) + ": " + cv.getMessage());
@@ -69,7 +69,7 @@ public class KennedysInferencingAndConstraintsExample {
 
 		// Run constraints on a single instance only
 		Resource person = cvs.get(0).getRoot();
-		List<ConstraintViolation> localCVS = SPINConstraints.check(person, new LinkedList<SPINStatistics>(), null, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
+		List<ConstraintViolation> localCVS = SPINConstraints.check(person, new LinkedList<SPINStatistics>(), null, OntModelSpec.OWL_MEM, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
 		System.out.println("Constraint violations for " + SPINLabels.get().getLabel(person) + ": " + localCVS.size());
 	}
 }

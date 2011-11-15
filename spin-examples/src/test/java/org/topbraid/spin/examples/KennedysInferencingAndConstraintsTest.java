@@ -112,7 +112,7 @@ public class KennedysInferencingAndConstraintsTest {
     public void testKennedyConstraints()
     {
 		// Run all constraints
-		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
+		List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, OntModelSpec.OWL_MEM, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
 		System.out.println("Constraint violations:");
 		for(ConstraintViolation cv : cvs) {
 			System.out.println(" - at " + SPINLabels.get().getLabel(cv.getRoot()) + ": " + cv.getMessage());
@@ -123,7 +123,7 @@ public class KennedysInferencingAndConstraintsTest {
 		
 		// Run constraints on a single instance only
 		Resource person = cvs.get(0).getRoot();
-		List<ConstraintViolation> localCVS = SPINConstraints.check(person, new LinkedList<SPINStatistics>(), null, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
+		List<ConstraintViolation> localCVS = SPINConstraints.check(person, new LinkedList<SPINStatistics>(), null, OntModelSpec.OWL_MEM, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
 		System.out.println("Constraint violations for " + SPINLabels.get().getLabel(person) + ": " + localCVS.size());
 		
         Assert.assertEquals(1, localCVS.size());
@@ -140,7 +140,7 @@ public class KennedysInferencingAndConstraintsTest {
         Assert.assertEquals(136, newTriples.size());
         
         // Run all constraints
-        List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
+        List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, new LinkedList<SPINStatistics>(), null, OntModelSpec.OWL_MEM, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
         System.out.println("Constraint violations:");
         for(ConstraintViolation cv : cvs) {
             System.out.println(" - at " + SPINLabels.get().getLabel(cv.getRoot()) + ": " + cv.getMessage());
@@ -151,7 +151,7 @@ public class KennedysInferencingAndConstraintsTest {
         
         // Run constraints on a single instance only
         Resource person = cvs.get(0).getRoot();
-        List<ConstraintViolation> localCVS = SPINConstraints.check(person, new LinkedList<SPINStatistics>(), null, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
+        List<ConstraintViolation> localCVS = SPINConstraints.check(person, new LinkedList<SPINStatistics>(), null, OntModelSpec.OWL_MEM, "http://topbraid.org/examples/kennedysSPIN", validFunctionSources);
         System.out.println("Constraint violations for " + SPINLabels.get().getLabel(person) + ": " + localCVS.size());
         
         Assert.assertEquals(1, localCVS.size());

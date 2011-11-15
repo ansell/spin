@@ -42,6 +42,7 @@ import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolutionMap;
@@ -252,7 +253,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations (empty if all is OK)
 	 */
 	public static List<ConstraintViolation> check(Resource resource, ProgressMonitor monitor) {
-		return check(resource, new LinkedList<SPINStatistics>(), monitor, null, Collections.emptySet());
+		return check(resource, new LinkedList<SPINStatistics>(), monitor, OntModelSpec.OWL_MEM, null, Collections.emptySet());
 	}
 	
 	
@@ -267,7 +268,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations (empty if all is OK)
 	 */
 	public static List<ConstraintViolation> check(Resource resource, List<SPINStatistics> stats, ProgressMonitor monitor) {
-	    return check(resource, stats, monitor, null, Collections.emptySet());
+	    return check(resource, stats, monitor, OntModelSpec.OWL_MEM, null, Collections.emptySet());
 	}
 	
     /**
@@ -278,16 +279,17 @@ public class SPINConstraints {
      * @param resource  the instance to run constraint checks on
      * @param stats  an (optional) List to add statistics to
      * @param monitor  an (optional) progress monitor (currently ignored)
+     * @param nextOntModelSpec the OntModelSpec to use when loading imports
      * @param source an object to use in the SPINModuleRegistry as the source of any functions that are discovered
      * @param validFunctionSources 
      * @return a List of ConstraintViolations (empty if all is OK)
      */
-    public static List<ConstraintViolation> check(Resource resource, List<SPINStatistics> stats, ProgressMonitor monitor, Object source, Set<Object> validFunctionSources) {
+    public static List<ConstraintViolation> check(Resource resource, List<SPINStatistics> stats, ProgressMonitor monitor, OntModelSpec nextOntModelSpec, Object source, Set<Object> validFunctionSources) {
 	    List<ConstraintViolation> results = new LinkedList<ConstraintViolation>();
 		
 		// If spin:imports exist, then continue with the union model
 		try {
-			Model importsModel = SPINImports.get().getImportsModel(resource.getModel(), source);
+			Model importsModel = SPINImports.get().getImportsModel(resource.getModel(), source, nextOntModelSpec);
 			if(importsModel != resource.getModel()) {
 				resource = ((Resource)resource.inModel(importsModel));
 			}
@@ -312,7 +314,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations
 	 */
 	public static List<ConstraintViolation> check(Model model, ProgressMonitor monitor) {
-		return check(model, null, monitor, null, Collections.emptySet());
+		return check(model, null, monitor, OntModelSpec.OWL_MEM, null, Collections.emptySet());
 	}
 	
 
@@ -327,7 +329,7 @@ public class SPINConstraints {
 	 * @return a List of ConstraintViolations
 	 */
 	public static List<ConstraintViolation> check(Model model, List<SPINStatistics> stats, ProgressMonitor monitor) {
-	    return check(model, stats, monitor, null, Collections.emptySet());
+	    return check(model, stats, monitor, OntModelSpec.OWL_MEM, null, Collections.emptySet());
 	}
 	
     /**
@@ -342,9 +344,9 @@ public class SPINConstraints {
      * @param validFunctionSources TODO
      * @return a List of ConstraintViolations
      */
-    public static List<ConstraintViolation> check(Model model, List<SPINStatistics> stats, ProgressMonitor monitor, Object source, Set<Object> validFunctionSources) {
+    public static List<ConstraintViolation> check(Model model, List<SPINStatistics> stats, ProgressMonitor monitor, OntModelSpec nextOntModelSpec, Object source, Set<Object> validFunctionSources) {
 		List<ConstraintViolation> results = new LinkedList<ConstraintViolation>();
-		run(model, results, stats, monitor, source, validFunctionSources);
+		run(model, results, stats, monitor, nextOntModelSpec, source, validFunctionSources);
 		return results;
 	}
 	
@@ -466,21 +468,23 @@ public class SPINConstraints {
 			return false; 
 		}
 	}
-
+	
 	/**
 	 * 
-	 * @param model TODO
-	 * @param results TODO
-	 * @param stats TODO
-	 * @param monitor TODO
-	 * @param source The object to use as the source for any new functions that are discovered
+	 * @param model
+	 * @param results
+	 * @param stats
+	 * @param monitor
+	 * @param nextOntModelSpec
+     * @param source The object to use as the source for any new functions that are discovered
+	 * @param validFunctionSources
 	 */
-    private static void run(Model model, List<ConstraintViolation> results, List<SPINStatistics> stats, ProgressMonitor monitor, Object source, Set<Object> validFunctionSources) {
+    private static void run(Model model, List<ConstraintViolation> results, List<SPINStatistics> stats, ProgressMonitor monitor, OntModelSpec nextOntModelSpec, Object source, Set<Object> validFunctionSources) {
 	    Map<CommandWrapper,Map<String,RDFNode>> templateBindings = new HashMap<CommandWrapper,Map<String,RDFNode>>();
 		
 		// If spin:imports exist then continue with the union model
 		try {
-			model = SPINImports.get().getImportsModel(model, source);
+			model = SPINImports.get().getImportsModel(model, source, nextOntModelSpec);
 		}
 		catch(IOException ex) {
 			// TODO: better error handling

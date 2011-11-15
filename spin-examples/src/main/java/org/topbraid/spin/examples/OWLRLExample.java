@@ -87,6 +87,8 @@ public class OWLRLExample {
 	private static OntModel loadModelWithImports(String url) {
 		Model baseModel = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
 		baseModel.read(url);
+		// See org.queryall.impl.rdfrule.SpinUtils static initialiser for an example of an OntModelSpec that uses a custom LocationMapper
+		// To have a custom mapping, need to replace OntModelSpec.OWL_MEM with one that uses a custom OntDocumentManager, which uses a custom FileManager, which uses a custom LocationMapper
 		return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, baseModel);
 	}
 }
