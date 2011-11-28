@@ -49,7 +49,7 @@ public class SPINParsingTest {
         // Register system functions (such as sp:gt (>))
         // Initialize system functions and templates
         //SPINModuleRegistry.get().reset();
-        SPINModuleRegistry.get().init();
+        //SPINModuleRegistry.get().init();
         
         model = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
         model.setNsPrefix("rdf", RDF.getURI());
@@ -72,8 +72,8 @@ public class SPINParsingTest {
         }
         
         // Initialize system functions and templates
-        SPINModuleRegistry.get().reset();
-        SPINModuleRegistry.get().init();
+        //SPINModuleRegistry.get().reset();
+        //SPINModuleRegistry.get().init();
         
     }   
     
@@ -181,8 +181,6 @@ public class SPINParsingTest {
         System.out.println(r.asResource().hasProperty(propRdfTypeNativeString, model.getResource(SP.Select.toString())));
         System.out.println(r.asResource().hasProperty(RDF.type, model.getResource(spinSelectString)));
         System.out.println(r.asResource().hasProperty(model.getProperty(rdfTypeString), SP.Select));
-        System.out.println(r.asResource().hasProperty(propRdfTypeNative, spinSelectString));
-        System.out.println(r.asResource().hasProperty(model.getProperty(rdfTypeString, spinSelectString)));
 
         Assert.assertTrue(r.asResource().hasProperty(RDF.type, SP.Select));
         Assert.assertTrue(r.asResource().hasProperty(propRdfTypeString, model.getResource(spinSelectString)));
@@ -191,9 +189,6 @@ public class SPINParsingTest {
         Assert.assertTrue(r.asResource().hasProperty(propRdfTypeNativeString, model.getResource(SP.Select.toString())));
         Assert.assertTrue(r.asResource().hasProperty(RDF.type, model.getResource(spinSelectString)));
         Assert.assertTrue(r.asResource().hasProperty(model.getProperty(rdfTypeString), SP.Select));
-        Assert.assertTrue(r.asResource().hasProperty(propRdfTypeNative, spinSelectString));
-        Assert.assertTrue(r.asResource().hasProperty(model.getProperty(rdfTypeString, spinSelectString)));
-        
     }
     
     private boolean contains(Query nextQuery, String expected)
