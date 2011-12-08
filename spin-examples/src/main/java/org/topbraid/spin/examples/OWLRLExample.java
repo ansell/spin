@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
+import org.topbraid.spin.inference.SPINExplanations;
 import org.topbraid.spin.inference.SPINInferences;
 import org.topbraid.spin.inference.SPINRuleComparator;
 import org.topbraid.spin.system.SPINModuleRegistry;
@@ -26,6 +27,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.shared.ReificationStyle;
 
 
@@ -77,10 +79,19 @@ public class OWLRLExample {
 		Map<Resource,List<CommandWrapper>> cls2Constructor = SPINQueryFinder.getClass2QueryMap(queryModel, queryModel, SPIN.constructor, true, initialTemplateBindings, false, validFunctionSources);
 		SPINRuleComparator comparator = new DefaultSPINRuleComparator(queryModel);
 
+		SPINExplanations explanations = new SPINExplanations();
+		
 		// Run all inferences
 		System.out.println("Running SPIN inferences...");
-		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, false, SPIN.rule, comparator, null, validFunctionSources);
+		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, explanations, null, false, SPIN.rule, comparator, null, validFunctionSources);
 		System.out.println("Inferred triples: " + newTriples.size());
+		
+		for(Statement s : newTriples.listStatements().toList()) {
+		    String exp = explanations.getText(s.asTriple());
+		    if(exp != null) {
+		    System.out.println("Explanation for " + s + ":\n - " + exp);
+		    }
+	    }
 	}
 
 	
