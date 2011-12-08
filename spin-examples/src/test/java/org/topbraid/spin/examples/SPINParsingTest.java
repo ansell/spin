@@ -48,8 +48,8 @@ public class SPINParsingTest {
     {
         // Register system functions (such as sp:gt (>))
         // Initialize system functions and templates
-        //SPINModuleRegistry.get().reset();
-        //SPINModuleRegistry.get().init();
+        SPINModuleRegistry.get().reset();
+        SPINModuleRegistry.get().init();
         
         model = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
         model.setNsPrefix("rdf", RDF.getURI());
@@ -72,9 +72,8 @@ public class SPINParsingTest {
         }
         
         // Initialize system functions and templates
-        //SPINModuleRegistry.get().reset();
-        //SPINModuleRegistry.get().init();
-        
+        SPINModuleRegistry.get().reset();
+        SPINModuleRegistry.get().init();
     }   
     
     @Test
