@@ -101,7 +101,6 @@ import com.hp.hpl.jena.sparql.syntax.ElementSubQuery;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.Template;
-import com.hp.hpl.jena.sparql.syntax.TemplateTriple;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -766,17 +765,18 @@ public class ARQ2SPIN {
 	
 	private Resource createHead(Template template) {
 		final List<Resource> members = new LinkedList<Resource>();
-		template.visit(new AbstractTemplateVisitor() {
-			@Override
-			public void visit(TemplateTriple templateTriple) {
-				Resource tripleTemplate = model.createResource(); // No SP.TripleTemplate needed
-				Triple triple = templateTriple.getTriple();
-				tripleTemplate.addProperty(SP.subject, getNode(triple.getSubject()));
-				tripleTemplate.addProperty(SP.predicate, getNode(triple.getPredicate()));
-				tripleTemplate.addProperty(SP.object, getNode(triple.getObject()));
-				members.add(tripleTemplate);
-			}
-		});
+		
+		List<Triple> triples = template.getTriples();
+		
+		for(Triple triple : triples)
+		{
+        	Resource tripleTemplate = model.createResource(); // No SP.TripleTemplate needed
+        	tripleTemplate.addProperty(SP.subject, getNode(triple.getSubject()));
+        	tripleTemplate.addProperty(SP.predicate, getNode(triple.getPredicate()));
+        	tripleTemplate.addProperty(SP.object, getNode(triple.getObject()));
+        	members.add(tripleTemplate);
+		}
+		
 		return model.createList(members.iterator());
 	}
 	
