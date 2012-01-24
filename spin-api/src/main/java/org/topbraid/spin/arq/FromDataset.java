@@ -6,7 +6,9 @@ import java.util.Set;
 
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.LabelExistsException;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
@@ -79,4 +81,5 @@ public class FromDataset extends DelegatingDataset {
 			return namedGraphs.iterator();
 		}
 	}
+
 }
