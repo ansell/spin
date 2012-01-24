@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>spin-api</artifactId>
 	<name>spin-api</name>
-	<url>http://maven.apache.org</url>
+	<url>http://topbraid.org/spin/api/</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -18,49 +18,42 @@
 		<dependency>
 			<groupId>org.topquadrant</groupId>
 			<artifactId>spin-base</artifactId>
-			<version>${spin.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.hp.hpl.jena</groupId>
-			<artifactId>jena</artifactId>
-			<version>2.6.4</version>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-core</artifactId>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.hp.hpl.jena</groupId>
-			<artifactId>arq</artifactId>
-			<version>2.8.7</version>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-arq</artifactId>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-	  	<dependency>
-	  		<groupId>org.slf4j</groupId>
-	  		<artifactId>slf4j-api</artifactId>
-	  		<version>${slf4j.version}</version>
-	  		<scope>compile</scope>
-	  	</dependency>
-	  	<dependency>
-	  		<groupId>org.slf4j</groupId>
-	  		<artifactId>slf4j-log4j12</artifactId>
-	  		<version>${slf4j.version}</version>
-	  		<scope>test</scope>
-	  	</dependency>
-	  	<dependency>
-	  		<groupId>log4j</groupId>
-	  		<artifactId>log4j</artifactId>
-	  		<version>1.2.16</version>
-	  		<scope>test</scope>
-	  	</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
