@@ -358,6 +358,10 @@ public class SPINConstraints {
 			Query construct = com.hp.hpl.jena.query.QueryFactory.create(ask);
 			construct.setQueryConstructType();
 			com.hp.hpl.jena.sparql.syntax.Template template = construct.getConstructTemplate();
+			if(template == null)
+			{
+			    throw new RuntimeException("Template was null");
+			}
 			BasicPattern triples = template.getBGP();
 			Node subject = Node.createAnon();
 			triples.add(Triple.create(subject, RDF.type.asNode(), SPIN.ConstraintViolation.asNode()));
