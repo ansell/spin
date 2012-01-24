@@ -7,6 +7,8 @@ import java.util.List;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.LabelExistsException;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.shared.Lock;
 import com.hp.hpl.jena.sparql.core.DatasetGraph;
@@ -136,4 +138,84 @@ public abstract class DelegatingDataset implements Dataset {
 	public Iterator<String> listNames() {
 		return delegate.listNames();
 	}
+
+    @Override
+    public void setDefaultModel(Model model)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void addNamedModel(String uri, Model model) throws LabelExistsException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void removeNamedModel(String uri)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void replaceNamedModel(String uri, Model model)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public boolean supportsTransactions()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public void begin(ReadWrite readWrite)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void commit()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void abort()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public boolean isInTransaction()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public void end()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
