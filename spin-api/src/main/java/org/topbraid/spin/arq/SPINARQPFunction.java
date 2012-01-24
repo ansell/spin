@@ -31,6 +31,7 @@ import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.ExecutionContext;
 import com.hp.hpl.jena.sparql.engine.QueryIterator;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import com.hp.hpl.jena.sparql.engine.binding.BindingHashMap;
 import com.hp.hpl.jena.sparql.engine.binding.BindingMap;
 import com.hp.hpl.jena.sparql.engine.iterator.QueryIterConcat;
 import com.hp.hpl.jena.sparql.expr.Expr;
@@ -135,7 +136,7 @@ public class SPINARQPFunction extends PropertyFunctionBase implements PropertyFu
 					Iterator<Triple> it = queryGraph.find(matchSubject, predicate, matchObject);
 					while(it.hasNext()) {
 						Triple triple = it.next();
-						BindingMap map = new BindingMap(binding);
+						BindingMap map = new BindingHashMap(binding);
 						if(subject.isVariable()) {
 							map.add(subject.asVar(), triple.getSubject());
 						}

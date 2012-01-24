@@ -11,6 +11,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import com.hp.hpl.jena.sparql.engine.binding.BindingHashMap;
 import com.hp.hpl.jena.sparql.engine.binding.BindingMap;
 import com.hp.hpl.jena.sparql.engine.iterator.QueryIteratorBase;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
@@ -60,7 +61,7 @@ class PFunctionQueryIterator extends QueryIteratorBase {
 	@Override
 	protected Binding moveToNextBinding() {
 		QuerySolution s = rs.nextSolution();
-		BindingMap result = new BindingMap(parentBinding);
+		BindingMap result = new BindingHashMap(parentBinding);
 		for(String varName : rvs) {
 			RDFNode resultNode = s.get(varName);
 			if(resultNode != null) {
@@ -76,4 +77,11 @@ class PFunctionQueryIterator extends QueryIteratorBase {
 
 	public void output(IndentedWriter out, SerializationContext sCxt) {
 	}
+
+
+    @Override
+    protected void requestCancel()
+    {
+        throw new UnsupportedOperationException("Iterator does not handle requestCancel yet");
+    }
 }
