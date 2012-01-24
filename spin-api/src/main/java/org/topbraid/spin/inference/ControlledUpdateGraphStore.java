@@ -204,4 +204,20 @@ class ControlledUpdateGraphStore implements GraphStore {
 	@Override
 	public void finishRequest() {
 	}
+
+
+    @Override
+    public void add(Node g, Node s, Node p, Node o)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void delete(Node g, Node s, Node p, Node o)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }
