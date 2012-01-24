@@ -55,11 +55,11 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.ReificationStyle;
+import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.syntax.Element;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.TemplateGroup;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -357,18 +357,19 @@ public class SPINConstraints {
 		    Syntax.defaultSyntax = ask.getSyntax();
 			Query construct = com.hp.hpl.jena.query.QueryFactory.create(ask);
 			construct.setQueryConstructType();
-			TemplateGroup templates = new TemplateGroup();
+			com.hp.hpl.jena.sparql.syntax.Template template = construct.getConstructTemplate();
+			BasicPattern triples = template.getBGP();
 			Node subject = Node.createAnon();
-			templates.addTriple(Triple.create(subject, RDF.type.asNode(), SPIN.ConstraintViolation.asNode()));
+			triples.add(Triple.create(subject, RDF.type.asNode(), SPIN.ConstraintViolation.asNode()));
 			Node thisVar = Var.alloc(SPIN.THIS_VAR_NAME);
-			templates.addTriple(Triple.create(subject, SPIN.violationRoot.asNode(), thisVar));
+			triples.add(Triple.create(subject, SPIN.violationRoot.asNode(), thisVar));
 			if(label == null) {
 				label = spinQuery.getComment();
 			}
 			if(label != null) {
-				templates.addTriple(Triple.create(subject, RDFS.label.asNode(), Node.createLiteral(label)));
+				triples.add(Triple.create(subject, RDFS.label.asNode(), Node.createLiteral(label)));
 			}
-			construct.setConstructTemplate(templates);
+			construct.setConstructTemplate(new com.hp.hpl.jena.sparql.syntax.Template(triples));
 			Element where = construct.getQueryPattern();
 			ElementGroup outerGroup = new ElementGroup();
 			ElementTriplesBlock block = new ElementTriplesBlock();
