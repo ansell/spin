@@ -21,10 +21,10 @@ import com.hp.hpl.jena.sparql.path.P_Alt;
 import com.hp.hpl.jena.sparql.path.P_Inverse;
 import com.hp.hpl.jena.sparql.path.P_Link;
 import com.hp.hpl.jena.sparql.path.P_Mod;
-import com.hp.hpl.jena.sparql.path.P_OneOrMore;
+import com.hp.hpl.jena.sparql.path.P_OneOrMore1;
 import com.hp.hpl.jena.sparql.path.P_ReverseLink;
 import com.hp.hpl.jena.sparql.path.P_Seq;
-import com.hp.hpl.jena.sparql.path.P_ZeroOrMore;
+import com.hp.hpl.jena.sparql.path.P_ZeroOrMore1;
 import com.hp.hpl.jena.sparql.path.P_ZeroOrOne;
 import com.hp.hpl.jena.sparql.path.Path;
 import com.hp.hpl.jena.sparql.path.PathWriter;
@@ -94,13 +94,13 @@ public class TriplePathImpl extends TupleImpl implements TriplePath {
 					long max = path.getProperty(SP.modMax).getLong();
 					if(max < 0) {
 						if(min == 1) {
-							return new P_OneOrMore(subPath);
+							return new P_OneOrMore1(subPath); //TODO could be moreN
 						}
 						else if(max == -1) {
 							return new P_ZeroOrOne(subPath);
 						}
 						else { // -2
-							return new P_ZeroOrMore(subPath);
+							return new P_ZeroOrMore1(subPath); //TODO could be moreN
 						}
 					}
 					else {

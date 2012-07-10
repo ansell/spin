@@ -79,16 +79,17 @@ import com.hp.hpl.jena.sparql.path.P_FixedLength;
 import com.hp.hpl.jena.sparql.path.P_Inverse;
 import com.hp.hpl.jena.sparql.path.P_Link;
 import com.hp.hpl.jena.sparql.path.P_Mod;
-import com.hp.hpl.jena.sparql.path.P_OneOrMore;
+import com.hp.hpl.jena.sparql.path.P_OneOrMore1;
 import com.hp.hpl.jena.sparql.path.P_Path1;
 import com.hp.hpl.jena.sparql.path.P_ReverseLink;
 import com.hp.hpl.jena.sparql.path.P_Seq;
-import com.hp.hpl.jena.sparql.path.P_ZeroOrMore;
+import com.hp.hpl.jena.sparql.path.P_ZeroOrMore1;
 import com.hp.hpl.jena.sparql.path.P_ZeroOrOne;
 import com.hp.hpl.jena.sparql.path.Path;
 import com.hp.hpl.jena.sparql.syntax.Element;
 import com.hp.hpl.jena.sparql.syntax.ElementAssign;
 import com.hp.hpl.jena.sparql.syntax.ElementBind;
+import com.hp.hpl.jena.sparql.syntax.ElementData;
 import com.hp.hpl.jena.sparql.syntax.ElementFilter;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.sparql.syntax.ElementMinus;
@@ -579,6 +580,13 @@ public class ARQ2SPIN {
 						}
 					}
 				}
+
+				@Override
+                public void visit(ElementData arg0)
+                {
+	                
+	                
+                }
 			});
 		}
 		return model.createList(members.iterator()).as(ElementList.class);
@@ -685,14 +693,14 @@ public class ARQ2SPIN {
 			Node node = link.getNode();
 			return (Resource) model.asRDFNode(node);
 		}
-		else if(path instanceof P_ZeroOrMore) {
-			return createMod((P_ZeroOrMore)path, 0, -2);
+		else if(path instanceof P_ZeroOrMore1) { //TODO could be moreN
+			return createMod((P_ZeroOrMore1)path, 0, -2);
 		}
 		else if(path instanceof P_ZeroOrOne) {
 			return createMod((P_ZeroOrOne) path, 0, -1);
 		}
-		else if(path instanceof P_OneOrMore) {
-			return createMod((P_OneOrMore)path, 1, -2);
+		else if(path instanceof P_OneOrMore1) { //TODO could be moreN
+			return createMod((P_OneOrMore1)path, 1, -2);
 		}
 		else if(path instanceof P_FixedLength) {
 			P_FixedLength mod = (P_FixedLength) path;

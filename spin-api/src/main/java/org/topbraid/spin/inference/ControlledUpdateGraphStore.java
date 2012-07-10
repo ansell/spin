@@ -14,6 +14,7 @@ import com.hp.hpl.jena.shared.Lock;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.update.GraphStore;
+import com.hp.hpl.jena.update.UpdateRequest;
 
 
 /**
@@ -219,5 +220,21 @@ class ControlledUpdateGraphStore implements GraphStore {
     {
         // TODO Auto-generated method stub
         
+    }
+
+
+	@Override
+    public void finishRequest(UpdateRequest arg0)
+    {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+
+	@Override
+    public void startRequest(UpdateRequest arg0)
+    {
+	    // TODO Auto-generated method stub
+	    
     }
 }

@@ -6,11 +6,10 @@ import java.util.Set;
 
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.LabelExistsException;
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.util.Context;
 
 
 /**
@@ -81,5 +80,13 @@ public class FromDataset extends DelegatingDataset {
 			return namedGraphs.iterator();
 		}
 	}
+
+
+	@Override
+    public Context getContext()
+    {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
 
 }
